@@ -3,189 +3,503 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta name="theme-color" content="#080d0a">
 <title>FitTracker</title>
 <style>
+:root{--bg:#080d0a;--panel:#121b15;--line:#26372c;--green:#65ed91;--muted:#99aa9e}
 *{box-sizing:border-box}
-body{margin:0;background:#080d0a;color:white;font-family:Arial,sans-serif}
-header{padding:22px 18px;color:#72ed9b;font-size:25px;font-weight:900}
-main{padding:0 17px 100px;max-width:650px;margin:auto}
-.card{background:#131b16;border:1px solid #24352a;border-radius:17px;padding:17px;margin:13px 0}
-h2{font-size:19px;margin:5px 0 15px}
-h3{font-size:15px}
-p{color:#9ba99f;font-size:13px}
-input,select{width:100%;padding:13px;margin:7px 0;background:#202b23;border:1px solid #394c3e;border-radius:9px;color:white}
-button{background:#72ed9b;color:#071109;border:0;border-radius:10px;padding:13px;font-weight:bold;cursor:pointer}
-button.secondary{background:#26362b;color:white}
-button:active{opacity:.7}
-.big{font-size:38px;font-weight:900;color:#72ed9b}
-nav{position:fixed;bottom:0;left:0;right:0;background:#101812;border-top:1px solid #293b2e;display:flex;justify-content:space-around;padding:12px 3px;z-index:5}
-nav button{background:transparent;color:#a6b6aa;padding:9px 5px;font-size:12px}
-nav button.active{color:#72ed9b}
+body{margin:0;background:var(--bg);color:#fff;font-family:Arial,sans-serif}
+header{padding:20px 17px 12px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:24px;font-weight:900;color:var(--green);letter-spacing:1px}
+main{max-width:650px;margin:auto;padding:8px 15px 105px}
 .page{display:none}.page.active{display:block}
-.muscle{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #29382e}
-.bar{height:7px;background:#26372c;border-radius:8px;margin-top:8px}
-.bar span{display:block;height:100%;background:#72ed9b;border-radius:8px}
-.small{font-size:12px;color:#9ba99f}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:17px;margin-bottom:13px}
+h2{font-size:19px;margin:3px 0 14px}
+h3{font-size:15px;margin:4px 0 10px}
+p,.muted{color:var(--muted);font-size:13px;line-height:1.5}
+.big{font-size:39px;font-weight:900;color:var(--green)}
+button{border:0;border-radius:10px;padding:13px;background:var(--green);color:#071009;font-weight:bold;font-size:14px;cursor:pointer}
+button.secondary{background:#26372c;color:white}
+button:disabled{opacity:.4}
+input,select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #35493a;border-radius:9px;background:#202c23;color:white;font-size:15px}
+label{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#1b2920;border-radius:12px;padding:13px}
+.stat b{font-size:21px;color:var(--green)}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:#101812;border-top:1px solid var(--line);padding:8px 2px calc(8px + env(safe-area-inset-bottom));z-index:10}
+nav button{background:none;color:#a6b5a9;font-size:11px;padding:7px 5px;line-height:1.6}
+nav button.active{color:var(--green)}
+.exercise{padding:13px 0;border-bottom:1px solid var(--line)}
+.exercise:last-child{border:0}
+.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.fields input{min-width:0;padding:10px;font-size:14px}
+.fields label{font-size:10px}
+.bar{height:7px;background:#26382c;border-radius:8px;overflow:hidden;margin-top:7px}
+.bar span{height:100%;display:block;background:var(--green)}
+.badge{color:var(--green);font-size:11px;font-weight:bold}
+.muscle-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.body-tabs{display:flex;gap:8px;margin-bottom:12px}
+.body-tabs button{flex:1}
+.anatomy{background:#0b120d;border-radius:14px;padding:8px}
+.anatomy svg{width:100%;height:auto;max-height:430px}
+.bodypart{fill:#354239;stroke:#84978a;stroke-width:1.5;transition:fill .3s}
+.bodypart.active{fill:var(--muscle-color,var(--green));filter:drop-shadow(0 0 5px var(--muscle-color,var(--green)))}
+.body-outline{fill:#29352e;stroke:#9aa99e;stroke-width:2}
+.calendar-day{padding:12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;align-items:center}
+.small{font-size:11px;color:var(--muted)}
+.hidden{display:none}
 </style>
 </head>
 <body>
-<header>FITTRACKER <span style="font-size:11px;color:white">● PROGRESS</span></header>
+<header>
+ <div class="logo">FITTRACKER</div>
+ <span class="badge">YOUR EVOLUTION ●</span>
+</header>
+
 <main>
 
+<!-- HOME -->
 <section id="home" class="page active">
-<div class="card">
-<p>IL TUO LIVELLO</p>
-<div class="big" id="mainRank">RANK 1</div>
-<p>Ogni allenamento ti avvicina al prossimo livello.</p>
-</div>
-<div class="card">
-<h2>Il tuo profilo</h2>
-<div id="profileInfo">Completa il tuo profilo per iniziare.</div>
-<button onclick="show('profile')">Configura profilo</button>
-</div>
-<div class="card">
-<h2>Prossimo allenamento</h2>
-<div id="nextWorkout">Martedì – Allenamento A</div>
-<button onclick="show('workout')">Vai all'allenamento</button>
-</div>
-<div class="card">
-<h2>Le tue statistiche</h2>
-<div id="stats">0 allenamenti completati</div>
-</div>
+ <div class="card">
+  <p>IL TUO LIVELLO GENERALE</p>
+  <div class="big" id="overallRank">RANK E</div>
+  <p id="homeDate"></p>
+  <div class="bar"><span id="overallProgress" style="width:5%"></span></div>
+ </div>
+ <div class="grid">
+  <div class="stat"><b id="totalWorkouts">0</b><p>Allenamenti</p></div>
+  <div class="stat"><b id="totalRecords">0</b><p>Record personali</p></div>
+ </div>
+ <div class="card">
+  <h2>Prossima sessione</h2>
+  <h3 id="nextTitle">Caricamento...</h3>
+  <p id="nextDescription"></p>
+  <button onclick="showPage('workout')">Apri allenamento</button>
+ </div>
+ <div class="card">
+  <h2>Il tuo corpo</h2>
+  <p>La figura si illumina in base ai progressi dei singoli muscoli.</p>
+  <button class="secondary" onclick="showPage('body')">Visualizza anatomia</button>
+ </div>
 </section>
 
+<!-- PROFILO -->
 <section id="profile" class="page">
-<div class="card">
-<h2>Il tuo profilo</h2>
-<label>Sesso</label>
-<select id="sex"><option value="male">Maschio</option><option value="female">Femmina</option></select>
-<label>Età</label><input id="age" type="number" placeholder="Età">
-<label>Peso (kg)</label><input id="weight" type="number" placeholder="Peso">
-<label>Altezza (cm)</label><input id="height" type="number" placeholder="Altezza">
-<button onclick="saveProfile()">Salva profilo</button>
-<p id="calories"></p>
-</div>
+ <div class="card">
+  <h2>Il tuo profilo</h2>
+  <label>Sesso</label>
+  <select id="sex"><option value="male">Maschio</option><option value="female">Femmina</option></select>
+  <label>Età</label><input id="age" type="number" placeholder="Età">
+  <label>Peso (kg)</label><input id="weight" type="number" step=".1" placeholder="Peso">
+  <label>Altezza (cm)</label><input id="height" type="number" placeholder="Altezza">
+  <button onclick="saveProfile()">Salva profilo</button>
+  <div id="calorieInfo" class="muted"></div>
+ </div>
+ <div class="card">
+  <h2>Inizio percorso</h2>
+  <p>Il tuo primo allenamento è stato mercoledì 18 novembre 2026.</p>
+  <b style="color:var(--green)">18/11/2026</b>
+ </div>
 </section>
 
+<!-- ALLENAMENTO -->
 <section id="workout" class="page">
-<div class="card">
-<h2>Allenamento</h2>
-<select id="day" onchange="loadExercises()">
-<option value="A">Martedì – Allenamento A</option>
-<option value="B">Giovedì – Allenamento B</option>
-<option value="C">Sabato – Allenamento C</option>
-<option value="D">Domenica – Allenamento D</option>
-</select>
-<div id="exerciseList"></div>
-<button onclick="finishWorkout()">Completa allenamento</button>
-</div>
+ <div class="card">
+  <h2>Allenamento del giorno</h2>
+  <p id="workoutDate"></p>
+  <h3 id="workoutTitle"></h3>
+  <p id="workoutDescription"></p>
+  <div id="exerciseList"></div>
+  <div id="cardioInfo" class="small"></div>
+  <button style="width:100%;margin-top:15px" onclick="finishWorkout()">Completa allenamento</button>
+  <p>Inserisci i pesi realmente utilizzati. Puoi modificarli a ogni sessione.</p>
+ </div>
+ <div class="card">
+  <h3>Timer recupero</h3>
+  <div class="big" id="timer">01:30</div>
+  <div class="grid">
+   <button onclick="startTimer(60)">60 secondi</button>
+   <button onclick="startTimer(90)">90 secondi</button>
+  </div>
+  <button class="secondary" style="width:100%;margin-top:8px" onclick="stopTimer()">Ferma timer</button>
+ </div>
 </section>
 
-<section id="muscles" class="page">
-<div class="card">
-<h2>Rank muscolari</h2>
-<p>I livelli aumentano registrando gli allenamenti.</p>
-<div id="muscleList"></div>
-</div>
+<!-- CORPO -->
+<section id="body" class="page">
+ <div class="card">
+  <h2>Anatomia muscolare</h2>
+  <p>Seleziona la vista frontale o posteriore. Il colore rappresenta il livello di progresso registrato.</p>
+  <div class="body-tabs">
+   <button id="frontBtn" onclick="setBodyView('front')">Frontale</button>
+   <button id="backBtn" class="secondary" onclick="setBodyView('back')">Posteriore</button>
+  </div>
+  <div class="anatomy" id="anatomy"></div>
+  <div id="selectedMuscle" class="stat" style="margin-top:12px">
+   Seleziona un gruppo muscolare
+  </div>
+ </div>
+ <div class="card">
+  <h2>Livelli muscolari</h2>
+  <div id="muscleList"></div>
+ </div>
 </section>
 
+<!-- CALENDARIO -->
 <section id="calendar" class="page">
-<div class="card">
-<h2>Calendario settimanale</h2>
-<div id="calendarList"></div>
-</div>
+ <div class="card">
+  <h2>Il tuo calendario</h2>
+  <p>Partenza effettiva: mercoledì 18 novembre 2026. Il programma segue la sequenza degli allenamenti da quella data.</p>
+  <div id="calendarList"></div>
+ </div>
+</section>
+
+<!-- STORICO -->
+<section id="history" class="page">
+ <div class="card">
+  <h2>Storico allenamenti</h2>
+  <div id="historyList"></div>
+ </div>
 </section>
 
 </main>
+
 <nav>
-<button class="active" onclick="show('home',this)">⌂<br>Home</button>
-<button onclick="show('workout',this)">⚡<br>Workout</button>
-<button onclick="show('muscles',this)">◈<br>Muscoli</button>
-<button onclick="show('calendar',this)">▦<br>Calendario</button>
-<button onclick="show('profile',this)">●<br>Profilo</button>
+ <button class="active" onclick="showPage('home',this)">⌂<br>Home</button>
+ <button onclick="showPage('workout',this)">⚡<br>Workout</button>
+ <button onclick="showPage('body',this)">◈<br>Corpo</button>
+ <button onclick="showPage('calendar',this)">▦<br>Calendario</button>
+ <button onclick="showPage('history',this)">↗<br>Storico</button>
+ <button onclick="showPage('profile',this)">●<br>Profilo</button>
 </nav>
 
 <script>
-const exercises={
-A:["Chest press","Lat machine","Leg press","Shoulder press","Push down tricipiti"],
-B:["Leg extension","Leg curl","Chest press","Rematore","Crunch machine"],
-C:["Lat machine","Leg press","Chest press","Curl bicipiti","Push down tricipiti"],
-D:["Leg curl","Rematore","Shoulder press","Crunch machine"]
-};
-const targets={
-"Chest press":["Petto"],"Lat machine":["Schiena","Bicipiti"],
-"Leg press":["Gambe","Glutei"],"Shoulder press":["Spalle"],
-"Push down tricipiti":["Tricipiti"],"Leg extension":["Gambe"],
-"Leg curl":["Gambe"],"Rematore":["Schiena","Bicipiti"],
-"Crunch machine":["Addominali"],"Curl bicipiti":["Bicipiti"]
-};
-let data=JSON.parse(localStorage.getItem("fittracker")||"{}");
-data.profile=data.profile||null;
-data.ranks=data.ranks||{};
-data.logs=data.logs||[];
-let currentExercises=[];
+const START = new Date(2026,10,18);
+const DAY = 86400000;
 
-function save(){localStorage.setItem("fittracker",JSON.stringify(data))}
-function show(id,btn){
-document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
-if(btn)btn.classList.add("active");
-if(id==="muscles")renderMuscles();
-if(id==="calendar")renderCalendar();
-if(id==="home")renderHome();
-if(id==="workout")loadExercises();
+const plans = [
+ {
+  name:"Giorno 1 – Petto, spalle e tricipiti",
+  description:"Prima sessione del percorso",
+  groups:["Petto","Spalle","Tricipiti"],
+  cardio:"Tapis roulant: riscaldamento 8 minuti a 6,5 km/h e inclinazione 1%; cardio finale 15 minuti a 3,5–5 km/h, inclinazione 0–3%. Defaticamento 2–3 minuti.",
+  exercises:[
+   ["Chest press",3,12,90,["Petto"]],
+   ["Panca inclinata manubri",3,10,90,["Petto"]],
+   ["Shoulder press",3,12,90,["Spalle"]],
+   ["Alzate laterali",3,15,60,["Spalle"]],
+   ["Push down cavi",3,12,60,["Tricipiti"]]
+  ]
+ },
+ {
+  name:"Giorno 2 – Schiena e bicipiti",
+  description:"Allenamento schiena e braccia",
+  groups:["Schiena","Bicipiti"],
+  cardio:"Cyclette: 15–20 minuti.",
+  exercises:[
+   ["Lat machine",3,12,90,["Schiena","Bicipiti"]],
+   ["Rematore macchina",3,12,90,["Schiena","Bicipiti"]],
+   ["Pulley basso",3,12,90,["Schiena","Bicipiti"]],
+   ["Curl manubri",3,12,60,["Bicipiti"]],
+   ["Curl cavo",2,15,60,["Bicipiti"]]
+  ]
+ },
+ {
+  name:"Giorno 3 – Gambe e addominali",
+  description:"Allenamento parte inferiore e core",
+  groups:["Gambe","Glutei","Addominali"],
+  cardio:"Camminata: 10–15 minuti.",
+  exercises:[
+   ["Leg press",3,12,90,["Gambe","Glutei"]],
+   ["Leg curl",3,12,75,["Gambe"]],
+   ["Leg extension",3,12,75,["Gambe"]],
+   ["Hip thrust",3,12,90,["Glutei"]],
+   ["Calf machine",3,15,60,["Gambe"]],
+   ["Crunch machine",3,15,60,["Addominali"]]
+  ]
+ },
+ {
+  name:"Giorno 4 – Total body e cardio",
+  description:"Richiamo generale e attività aerobica",
+  groups:["Petto","Schiena","Gambe","Spalle","Addominali"],
+  cardio:"Ellittica: 20 minuti.",
+  exercises:[
+   ["Chest press",3,12,75,["Petto"]],
+   ["Lat machine",3,12,75,["Schiena"]],
+   ["Leg press",3,12,90,["Gambe","Glutei"]],
+   ["Shoulder press",2,12,75,["Spalle"]],
+   ["Plank",3,20,60,["Addominali"]]
+  ]
+ }
+];
+
+const muscleNames=["Petto","Schiena","Spalle","Bicipiti","Tricipiti","Gambe","Glutei","Addominali"];
+const rankNames=["E","D","C","B","A","S","SS","SSS"];
+const rankColors=["#65736a","#7d9b82","#68c8a0","#63d8cf","#64b5ed","#a17bf4","#e8a3ec","#f3d36d"];
+
+let data={profile:null,logs:[],records:{},muscles:{}};
+try{
+ const saved=JSON.parse(localStorage.getItem("fittracker_v2"));
+ if(saved)data=saved;
+}catch(e){}
+data.logs=data.logs||[];
+data.records=data.records||{};
+data.muscles=data.muscles||{};
+let timerInterval=null;
+let timerSeconds=90;
+let bodyView="front";
+let currentPlanIndex=0;
+let pendingPlan=null;
+
+function save(){
+ localStorage.setItem("fittracker_v2",JSON.stringify(data));
 }
-function saveProfile(){
-let p={sex:document.getElementById("sex").value,age:+document.getElementById("age").value,weight:+document.getElementById("weight").value,height:+document.getElementById("height").value};
-if(!p.age||!p.weight||!p.height||p.age<18||p.weight<=0||p.height<=0){alert("Inserisci dati validi. L'app è impostata per adulti.");return}
-data.profile=p;save();renderHome();
-document.getElementById("calories").innerText="Profilo salvato. Stima metabolismo basale: "+Math.round((10*p.weight+6.25*p.height-5*p.age+(p.sex==="male"?5:-161)))+" kcal al giorno. Non è un obiettivo calorico.";
-alert("Profilo salvato!");
+function dateAt(offset){
+ return new Date(START.getTime()+offset*DAY);
+}
+function formatDate(d){
+ return d.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"});
+}
+function dayOffset(){
+ const today=new Date();
+ return Math.max(0,Math.floor((new Date(today.getFullYear(),today.getMonth(),today.getDate())-START)/DAY));
+}
+function planForOffset(offset){
+ const sequence=[0,1,-1,2,-1,3,-1];
+ return sequence[offset%7];
+}
+function getNextWorkout(){
+ let offset=dayOffset();
+ for(let i=offset;i<offset+8;i++){
+  let index=planForOffset(i);
+  if(index!==-1 && !data.logs.some(l=>l.date===dateAt(i).toDateString())){
+   return {offset:i,index};
+  }
+ }
+ return {offset,index:0};
+}
+function showPage(id,btn){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+ if(btn)btn.classList.add("active");
+ if(id==="home")renderHome();
+ if(id==="workout")renderWorkout();
+ if(id==="body")renderBody();
+ if(id==="calendar")renderCalendar();
+ if(id==="history")renderHistory();
+ if(id==="profile")renderProfile();
 }
 function renderHome(){
-let p=data.profile;
-document.getElementById("profileInfo").innerText=p?p.weight+" kg • "+p.height+" cm • "+p.age+" anni":"Completa il tuo profilo.";
-document.getElementById("mainRank").innerText="RANK "+(1+Math.floor(data.logs.length/4));
-document.getElementById("stats").innerText=data.logs.length+" allenamenti completati";
+ const next=getNextWorkout();
+ document.getElementById("overallRank").textContent=rankNames[Math.min(7,Math.floor(data.logs.length/5))];
+ document.getElementById("homeDate").textContent="Percorso iniziato il 18 novembre 2026";
+ document.getElementById("overallProgress").style.width=(data.logs.length%5*20+5)+"%";
+ document.getElementById("totalWorkouts").textContent=data.logs.length;
+ document.getElementById("totalRecords").textContent=Object.keys(data.records).length;
+ document.getElementById("nextTitle").textContent=plans[next.index].name;
+ document.getElementById("nextDescription").textContent=formatDate(dateAt(next.offset));
 }
-function loadExercises(){
-let day=document.getElementById("day").value;
-currentExercises=exercises[day];
-document.getElementById("exerciseList").innerHTML=currentExercises.map((e,i)=>`
-<div class="card">
-<h3>${e}</h3>
-<label>Serie</label><input id="s${i}" type="number" value="3" min="1">
-<label>Ripetizioni</label><input id="r${i}" type="number" value="12" min="1">
-<label>Peso (kg)</label><input id="w${i}" type="number" value="0" min="0" step="0.5">
-</div>`).join("");
+function renderProfile(){
+ if(!data.profile)return;
+ sex.value=data.profile.sex;
+ age.value=data.profile.age;
+ weight.value=data.profile.weight;
+ height.value=data.profile.height;
+ calculateCalories();
+}
+function saveProfile(){
+ const p={
+  sex:document.getElementById("sex").value,
+  age:+document.getElementById("age").value,
+  weight:+document.getElementById("weight").value,
+  height:+document.getElementById("height").value
+ };
+ if(!p.age||!p.weight||!p.height||p.age<18||p.weight<=0||p.height<=0){
+  alert("Inserisci valori validi. L'app richiede un profilo adulto.");return;
+ }
+ data.profile=p;save();calculateCalories();renderHome();
+ alert("Profilo salvato!");
+}
+function calculateCalories(){
+ const p=data.profile;if(!p)return;
+ const bmr=10*p.weight+6.25*p.height-5*p.age+(p.sex==="male"?5:-161);
+ document.getElementById("calorieInfo").textContent=
+ "Metabolismo basale stimato: "+Math.round(bmr)+" kcal/giorno. È una stima, non un obiettivo alimentare.";
+}
+function renderWorkout(){
+ const next=getNextWorkout();
+ currentPlanIndex=next.index;
+ pendingPlan=plans[next.index];
+ document.getElementById("workoutDate").textContent=formatDate(dateAt(next.offset));
+ document.getElementById("workoutTitle").textContent=pendingPlan.name;
+ document.getElementById("workoutDescription").textContent=pendingPlan.description;
+ document.getElementById("cardioInfo").textContent=pendingPlan.cardio;
+ document.getElementById("exerciseList").innerHTML=pendingPlan.exercises.map((e,i)=>{
+  let key=e[0];
+  return `<div class="exercise">
+   <h3>${key}</h3>
+   <div class="fields">
+    <div><label>Serie</label><input id="sets${i}" type="number" min="1" value="${e[1]}"></div>
+    <div><label>Ripetizioni</label><input id="reps${i}" type="number" min="1" value="${e[2]}"></div>
+    <div><label>Peso kg</label><input id="load${i}" type="number" min="0" step=".5" value="${data.records[key]||0}"></div>
+   </div>
+   <span class="small">Recupero suggerito: ${e[3]} secondi</span>
+  </div>`;
+ }).join("");
 }
 function finishWorkout(){
-let entries=currentExercises.map((e,i)=>({name:e,sets:+document.getElementById("s"+i).value,reps:+document.getElementById("r"+i).value,weight:+document.getElementById("w"+i).value}));
-if(entries.some(x=>!x.sets||!x.reps||x.weight<0)){alert("Controlla i valori inseriti.");return}
-entries.forEach(e=>(targets[e.name]||[]).forEach(m=>data.ranks[m]=(data.ranks[m]||0)+1));
-data.logs.push({date:new Date().toLocaleDateString("it-IT"),day:document.getElementById("day").value,entries});
-save();renderHome();alert("Allenamento salvato! Ottimo lavoro.");
+ if(!pendingPlan)return;
+ const entries=[];
+ for(let i=0;i<pendingPlan.exercises.length;i++){
+  const e=pendingPlan.exercises[i];
+  const sets=+document.getElementById("sets"+i).value;
+  const reps=+document.getElementById("reps"+i).value;
+  const load=+document.getElementById("load"+i).value;
+  if(!sets||!reps||load<0||!Number.isFinite(load)){
+   alert("Controlla serie, ripetizioni e pesi.");return;
+  }
+  entries.push({name:e[0],sets,reps,load,muscles:e[4]});
+ }
+ const next=getNextWorkout();
+ const date=dateAt(next.offset).toDateString();
+ if(data.logs.some(l=>l.date===date)){
+  alert("Questo allenamento risulta già registrato.");return;
+ }
+ entries.forEach(e=>{
+  if(e.load>(data.records[e.name]||0))data.records[e.name]=e.load;
+  e.muscles.forEach(m=>{
+   data.muscles[m]=data.muscles[m]||{best:0,points:0};
+   data.muscles[m].best=Math.max(data.muscles[m].best,e.load);
+   data.muscles[m].points+=e.sets*e.reps;
+  });
+ });
+ data.logs.push({
+  date,
+  dateLabel:formatDate(dateAt(next.offset)),
+  plan:pendingPlan.name,
+  entries,
+  cardio:pendingPlan.cardio
+ });
+ save();renderHome();renderBody();renderHistory();
+ alert("Allenamento registrato! Ottimo lavoro.");
+ showPage("home");
 }
-function renderMuscles(){
-let names=["Petto","Schiena","Spalle","Bicipiti","Tricipiti","Gambe","Glutei","Addominali"];
-document.getElementById("muscleList").innerHTML=names.map(m=>{
-let n=data.ranks[m]||0,rank=1+Math.floor(n/5),progress=n%5*20;
-return `<div class="muscle"><div style="width:75%"><b>${m}</b><div class="bar"><span style="width:${progress||5}%"></span></div></div><b style="color:#72ed9b">RANK ${rank}</b></div>`;
-}).join("");
+function muscleRank(m){
+ const points=(data.muscles[m]||{}).points||0;
+ return Math.min(7,Math.floor(points/60));
+}
+function renderBody(){
+ const container=document.getElementById("anatomy");
+ container.innerHTML=bodyView==="front"?frontSVG():backSVG();
+ document.getElementById("frontBtn").className=bodyView==="front"?"":"secondary";
+ document.getElementById("backBtn").className=bodyView==="back"?"":"secondary";
+ document.querySelectorAll(".bodypart").forEach(el=>{
+  const m=el.dataset.muscle;
+  const r=muscleRank(m);
+  el.style.setProperty("--muscle-color",rankColors[r]);
+  if((data.muscles[m]||{}).points>0)el.classList.add("active");
+  el.onclick=()=>selectMuscle(m);
+ });
+ document.getElementById("muscleList").innerHTML=muscleNames.map(m=>{
+  const r=muscleRank(m),info=data.muscles[m]||{best:0,points:0};
+  return `<div class="muscle-row">
+   <div style="flex:1"><b>${m}</b><div class="bar"><span style="width:${Math.min(100,info.points%60/60*100)}%;background:${rankColors[r]}"></span></div>
+   <span class="small">Record: ${info.best} kg</span></div>
+   <b style="color:${rankColors[r]}">RANK ${rankNames[r]}</b>
+  </div>`;
+ }).join("");
+}
+function selectMuscle(m){
+ const info=data.muscles[m]||{best:0,points:0};
+ const r=muscleRank(m);
+ document.getElementById("selectedMuscle").innerHTML=
+ `<b style="color:${rankColors[r]}">${m} – RANK ${rankNames[r]}</b><p>Carico massimo registrato: ${info.best} kg</p><p>Progressi registrati: ${info.points} ripetizioni totali</p>`;
+}
+function setBodyView(view){bodyView=view;renderBody()}
+function frontSVG(){
+ return `<svg viewBox="0 0 340 540" xmlns="http://www.w3.org/2000/svg" aria-label="Corpo umano anatomico frontale">
+ <g class="body-outline">
+ <ellipse cx="170" cy="36" rx="29" ry="34"/>
+ <path d="M146 66 L142 86 Q108 81 88 103 L66 185 Q60 202 72 208 L87 202 L109 127 L117 212 L105 328 L116 342 L126 265 L136 355 L125 487 Q122 505 139 506 L153 378 L170 365 L187 378 L201 506 Q218 505 215 487 L204 355 L214 265 L224 342 L235 328 L223 212 L231 127 L253 202 L268 208 Q280 202 274 185 L252 103 Q232 81 198 86 L194 66 Z"/>
+ </g>
+ <path class="bodypart" data-muscle="Spalle" d="M142 88 Q115 82 94 106 L113 145 Q132 126 149 117Z"/>
+ <path class="bodypart" data-muscle="Spalle" d="M198 88 Q225 82 246 106 L227 145 Q208 126 191 117Z"/>
+ <path class="bodypart" data-muscle="Petto" d="M116 124 Q142 108 168 130 L166 178 Q138 190 118 165Z"/>
+ <path class="bodypart" data-muscle="Petto" d="M224 124 Q198 108 172 130 L174 178 Q202 190 222 165Z"/>
+ <path class="bodypart" data-muscle="Addominali" d="M151 184 L189 184 L194 263 L170 277 L146 263Z"/>
+ <path class="bodypart" data-muscle="Bicipiti" d="M90 145 L112 155 L99 205 L81 199Z"/>
+ <path class="bodypart" data-muscle="Bicipiti" d="M250 145 L228 155 L241 205 L259 199Z"/>
+ <path class="bodypart" data-muscle="Tricipiti" d="M83 205 L101 208 L105 254 L89 259Z"/>
+ <path class="bodypart" data-muscle="Tricipiti" d="M257 205 L239 208 L235 254 L251 259Z"/>
+ <path class="bodypart" data-muscle="Gambe" d="M119 277 L166 282 L157 374 L137 427 L120 416 L128 350Z"/>
+ <path class="bodypart" data-muscle="Gambe" d="M221 277 L174 282 L183 374 L203 427 L220 416 L212 350Z"/>
+ <path class="bodypart" data-muscle="Glutei" d="M130 267 Q170 282 210 267 L204 310 L170 321 L136 310Z"/>
+ <path class="bodypart" data-muscle="Gambe" d="M120 423 L139 430 L137 491 L123 490Z"/>
+ <path class="bodypart" data-muscle="Gambe" d="M220 423 L201 430 L203 491 L217 490Z"/>
+ </svg>`;
+}
+function backSVG(){
+ return `<svg viewBox="0 0 340 540" xmlns="http://www.w3.org/2000/svg" aria-label="Corpo umano anatomico posteriore">
+ <g class="body-outline">
+ <ellipse cx="170" cy="36" rx="29" ry="34"/>
+ <path d="M146 66 L142 86 Q108 81 88 103 L66 185 Q60 202 72 208 L87 202 L109 127 L117 212 L105 328 L116 342 L126 265 L136 355 L125 487 Q122 505 139 506 L153 378 L170 365 L187 378 L201 506 Q218 505 215 487 L204 355 L214 265 L224 342 L235 328 L223 212 L231 127 L253 202 L268 208 Q280 202 274 185 L252 103 Q232 81 198 86 L194 66 Z"/>
+ </g>
+ <path class="bodypart" data-muscle="Schiena" d="M145 92 Q170 108 195 92 L216 181 L170 221 L124 181Z"/>
+ <path class="bodypart" data-muscle="Spalle" d="M142 88 Q115 82 94 106 L113 145 L148 120Z"/>
+ <path class="bodypart" data-muscle="Spalle" d="M198 88 Q225 82 246 106 L227 145 L192 120Z"/>
+ <path class="bodypart" data-muscle="Tricipiti" d="M90 145 L112 155 L99 205 L81 199Z"/>
+ <path class="bodypart" data-muscle="Tricipiti" d="M250 145 L228 155 L241 205 L259 199Z"/>
+ <path class="bodypart" data-muscle="Glutei" d="M130 250 Q170 267 210 250 L207 318 L170 333 L133 318Z"/>
+ <path class="bodypart" data-muscle="Gambe" d="M119 315 L166 326 L157 400 L137 427 L120 416 L128 350Z"/>
+ <path class="bodypart" data-muscle="Gambe" d="M221 315 L174 326 L183 400 L203 427 L220 416 L212 350Z"/>
+ <path class="bodypart" data-muscle="Gambe" d="M120 423 L139 430 L137 491 L123 490Z"/>
+ <path class="bodypart" data-muscle="Gambe" d="M220 423 L201 430 L203 491 L217 490Z"/>
+ </svg>`;
 }
 function renderCalendar(){
-document.getElementById("calendarList").innerHTML=["Lunedì – Riposo","Martedì – Allenamento A","Mercoledì – Riposo","Giovedì – Allenamento B","Venerdì – Riposo","Sabato – Allenamento C","Domenica – Allenamento D"].map(x=>`<div class="muscle">${x}</div>`).join("");
+ const list=document.getElementById("calendarList");
+ const todayOffset=dayOffset();
+ let html="";
+ for(let i=0;i<28;i++){
+  const d=dateAt(i),plan=planForOffset(i);
+  const done=data.logs.some(l=>l.date===d.toDateString());
+  html+=`<div class="calendar-day">
+   <div><b>${formatDate(d)}</b><div class="small">${plan===-1?"Recupero":plans[plan].name}</div></div>
+   <span class="badge">${done?"COMPLETATO":plan===-1?"RIPOSO":i<todayOffset?"NON REGISTRATO":"PROGRAMMATO"}</span>
+  </div>`;
+ }
+ list.innerHTML=html;
 }
-renderHome();loadExercises();renderMuscles();renderCalendar();
-if(data.profile){
-document.getElementById("sex").value=data.profile.sex;
-document.getElementById("age").value=data.profile.age;
-document.getElementById("weight").value=data.profile.weight;
-document.getElementById("height").value=data.profile.height;
+function renderHistory(){
+ const list=document.getElementById("historyList");
+ if(!data.logs.length){list.innerHTML="<p>Ancora nessun allenamento registrato.</p>";return}
+ list.innerHTML=[...data.logs].reverse().map(l=>`
+ <div class="exercise">
+ <b>${l.plan}</b><p>${l.dateLabel||l.date}</p>
+ ${l.entries.map(e=>`<p>${e.name}: ${e.sets} × ${e.reps} – ${e.load} kg</p>`).join("")}
+ </div>`).join("");
 }
+function startTimer(seconds){
+ stopTimer();timerSeconds=seconds;updateTimer();
+ timerInterval=setInterval(()=>{
+  timerSeconds--;updateTimer();
+  if(timerSeconds<=0){stopTimer();alert("Recupero terminato!");}
+ },1000);
+}
+function updateTimer(){
+ document.getElementById("timer").textContent=
+ String(Math.floor(timerSeconds/60)).padStart(2,"0")+":"+
+ String(timerSeconds%60).padStart(2,"0");
+}
+function stopTimer(){if(timerInterval)clearInterval(timerInterval);timerInterval=null}
+renderHome();
+renderWorkout();
+renderCalendar();
+renderBody();
+renderHistory();
+renderProfile();
 </script>
 </body>
 </html>
