@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080d0a">
+<title>FitTracker</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d0a;color:white;font-family:Arial,sans-serif}
+header{padding:22px 18px;color:#72ed9b;font-size:25px;font-weight:900}
+main{padding:0 17px 100px;max-width:650px;margin:auto}
+.card{background:#131b16;border:1px solid #24352a;border-radius:17px;padding:17px;margin:13px 0}
+h2{font-size:19px;margin:5px 0 15px}
+h3{font-size:15px}
+p{color:#9ba99f;font-size:13px}
+input,select{width:100%;padding:13px;margin:7px 0;background:#202b23;border:1px solid #394c3e;border-radius:9px;color:white}
+button{background:#72ed9b;color:#071109;border:0;border-radius:10px;padding:13px;font-weight:bold;cursor:pointer}
+button.secondary{background:#26362b;color:white}
+button:active{opacity:.7}
+.big{font-size:38px;font-weight:900;color:#72ed9b}
+nav{position:fixed;bottom:0;left:0;right:0;background:#101812;border-top:1px solid #293b2e;display:flex;justify-content:space-around;padding:12px 3px;z-index:5}
+nav button{background:transparent;color:#a6b6aa;padding:9px 5px;font-size:12px}
+nav button.active{color:#72ed9b}
+.page{display:none}.page.active{display:block}
+.muscle{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #29382e}
+.bar{height:7px;background:#26372c;border-radius:8px;margin-top:8px}
+.bar span{display:block;height:100%;background:#72ed9b;border-radius:8px}
+.small{font-size:12px;color:#9ba99f}
+</style>
+</head>
+<body>
+<header>FITTRACKER <span style="font-size:11px;color:white">● PROGRESS</span></header>
+<main>
+
+<section id="home" class="page active">
+<div class="card">
+<p>IL TUO LIVELLO</p>
+<div class="big" id="mainRank">RANK 1</div>
+<p>Ogni allenamento ti avvicina al prossimo livello.</p>
+</div>
+<div class="card">
+<h2>Il tuo profilo</h2>
+<div id="profileInfo">Completa il tuo profilo per iniziare.</div>
+<button onclick="show('profile')">Configura profilo</button>
+</div>
+<div class="card">
+<h2>Prossimo allenamento</h2>
+<div id="nextWorkout">Martedì – Allenamento A</div>
+<button onclick="show('workout')">Vai all'allenamento</button>
+</div>
+<div class="card">
+<h2>Le tue statistiche</h2>
+<div id="stats">0 allenamenti completati</div>
+</div>
+</section>
+
+<section id="profile" class="page">
+<div class="card">
+<h2>Il tuo profilo</h2>
+<label>Sesso</label>
+<select id="sex"><option value="male">Maschio</option><option value="female">Femmina</option></select>
+<label>Età</label><input id="age" type="number" placeholder="Età">
+<label>Peso (kg)</label><input id="weight" type="number" placeholder="Peso">
+<label>Altezza (cm)</label><input id="height" type="number" placeholder="Altezza">
+<button onclick="saveProfile()">Salva profilo</button>
+<p id="calories"></p>
+</div>
+</section>
+
+<section id="workout" class="page">
+<div class="card">
+<h2>Allenamento</h2>
+<select id="day" onchange="loadExercises()">
+<option value="A">Martedì – Allenamento A</option>
+<option value="B">Giovedì – Allenamento B</option>
+<option value="C">Sabato – Allenamento C</option>
+<option value="D">Domenica – Allenamento D</option>
+</select>
+<div id="exerciseList"></div>
+<button onclick="finishWorkout()">Completa allenamento</button>
+</div>
+</section>
+
+<section id="muscles" class="page">
+<div class="card">
+<h2>Rank muscolari</h2>
+<p>I livelli aumentano registrando gli allenamenti.</p>
+<div id="muscleList"></div>
+</div>
+</section>
+
+<section id="calendar" class="page">
+<div class="card">
+<h2>Calendario settimanale</h2>
+<div id="calendarList"></div>
+</div>
+</section>
+
+</main>
+<nav>
+<button class="active" onclick="show('home',this)">⌂<br>Home</button>
+<button onclick="show('workout',this)">⚡<br>Workout</button>
+<button onclick="show('muscles',this)">◈<br>Muscoli</button>
+<button onclick="show('calendar',this)">▦<br>Calendario</button>
+<button onclick="show('profile',this)">●<br>Profilo</button>
+</nav>
+
+<script>
+const exercises={
+A:["Chest press","Lat machine","Leg press","Shoulder press","Push down tricipiti"],
+B:["Leg extension","Leg curl","Chest press","Rematore","Crunch machine"],
+C:["Lat machine","Leg press","Chest press","Curl bicipiti","Push down tricipiti"],
+D:["Leg curl","Rematore","Shoulder press","Crunch machine"]
+};
+const targets={
+"Chest press":["Petto"],"Lat machine":["Schiena","Bicipiti"],
+"Leg press":["Gambe","Glutei"],"Shoulder press":["Spalle"],
+"Push down tricipiti":["Tricipiti"],"Leg extension":["Gambe"],
+"Leg curl":["Gambe"],"Rematore":["Schiena","Bicipiti"],
+"Crunch machine":["Addominali"],"Curl bicipiti":["Bicipiti"]
+};
+let data=JSON.parse(localStorage.getItem("fittracker")||"{}");
+data.profile=data.profile||null;
+data.ranks=data.ranks||{};
+data.logs=data.logs||[];
+let currentExercises=[];
+
+function save(){localStorage.setItem("fittracker",JSON.stringify(data))}
+function show(id,btn){
+document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+if(btn)btn.classList.add("active");
+if(id==="muscles")renderMuscles();
+if(id==="calendar")renderCalendar();
+if(id==="home")renderHome();
+if(id==="workout")loadExercises();
+}
+function saveProfile(){
+let p={sex:document.getElementById("sex").value,age:+document.getElementById("age").value,weight:+document.getElementById("weight").value,height:+document.getElementById("height").value};
+if(!p.age||!p.weight||!p.height||p.age<18||p.weight<=0||p.height<=0){alert("Inserisci dati validi. L'app è impostata per adulti.");return}
+data.profile=p;save();renderHome();
+document.getElementById("calories").innerText="Profilo salvato. Stima metabolismo basale: "+Math.round((10*p.weight+6.25*p.height-5*p.age+(p.sex==="male"?5:-161)))+" kcal al giorno. Non è un obiettivo calorico.";
+alert("Profilo salvato!");
+}
+function renderHome(){
+let p=data.profile;
+document.getElementById("profileInfo").innerText=p?p.weight+" kg • "+p.height+" cm • "+p.age+" anni":"Completa il tuo profilo.";
+document.getElementById("mainRank").innerText="RANK "+(1+Math.floor(data.logs.length/4));
+document.getElementById("stats").innerText=data.logs.length+" allenamenti completati";
+}
+function loadExercises(){
+let day=document.getElementById("day").value;
+currentExercises=exercises[day];
+document.getElementById("exerciseList").innerHTML=currentExercises.map((e,i)=>`
+<div class="card">
+<h3>${e}</h3>
+<label>Serie</label><input id="s${i}" type="number" value="3" min="1">
+<label>Ripetizioni</label><input id="r${i}" type="number" value="12" min="1">
+<label>Peso (kg)</label><input id="w${i}" type="number" value="0" min="0" step="0.5">
+</div>`).join("");
+}
+function finishWorkout(){
+let entries=currentExercises.map((e,i)=>({name:e,sets:+document.getElementById("s"+i).value,reps:+document.getElementById("r"+i).value,weight:+document.getElementById("w"+i).value}));
+if(entries.some(x=>!x.sets||!x.reps||x.weight<0)){alert("Controlla i valori inseriti.");return}
+entries.forEach(e=>(targets[e.name]||[]).forEach(m=>data.ranks[m]=(data.ranks[m]||0)+1));
+data.logs.push({date:new Date().toLocaleDateString("it-IT"),day:document.getElementById("day").value,entries});
+save();renderHome();alert("Allenamento salvato! Ottimo lavoro.");
+}
+function renderMuscles(){
+let names=["Petto","Schiena","Spalle","Bicipiti","Tricipiti","Gambe","Glutei","Addominali"];
+document.getElementById("muscleList").innerHTML=names.map(m=>{
+let n=data.ranks[m]||0,rank=1+Math.floor(n/5),progress=n%5*20;
+return `<div class="muscle"><div style="width:75%"><b>${m}</b><div class="bar"><span style="width:${progress||5}%"></span></div></div><b style="color:#72ed9b">RANK ${rank}</b></div>`;
+}).join("");
+}
+function renderCalendar(){
+document.getElementById("calendarList").innerHTML=["Lunedì – Riposo","Martedì – Allenamento A","Mercoledì – Riposo","Giovedì – Allenamento B","Venerdì – Riposo","Sabato – Allenamento C","Domenica – Allenamento D"].map(x=>`<div class="muscle">${x}</div>`).join("");
+}
+renderHome();loadExercises();renderMuscles();renderCalendar();
+if(data.profile){
+document.getElementById("sex").value=data.profile.sex;
+document.getElementById("age").value=data.profile.age;
+document.getElementById("weight").value=data.profile.weight;
+document.getElementById("height").value=data.profile.height;
+}
+</script>
+</body>
+</html>
