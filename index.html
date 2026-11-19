@@ -38,10 +38,11 @@ h2{font-size:19px;margin:0 0 15px}h3{font-size:15px;margin:0}
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .exercise{border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0;background:var(--panel)}
 .exercise-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.tag{font-size:10px;color:var(--green);background:#203020;padding:6px 9px;border-radius:20px}
-.set{display:grid;grid-template-columns:35px 1fr 1fr 42px;gap:7px;align-items:center;margin-top:10px}
-.set input,.field input,.field select,.set select{background:#202820;border:1px solid #344037;color:white;border-radius:9px;padding:11px 7px;width:100%;min-width:0}
-.set label{font-size:11px;color:var(--muted)}
+.exercise-name{font-size:16px;font-weight:800}
+.tag{font-size:10px;color:var(--green);background:#203020;padding:6px 9px;border-radius:20px;white-space:nowrap}
+.set{display:grid;grid-template-columns:30px 1fr 1fr 38px;gap:7px;align-items:end;margin-top:12px}
+.set input,.field input,.field select{background:#202820;border:1px solid #344037;color:white;border-radius:9px;padding:11px 7px;width:100%;min-width:0}
+.set label{display:block;font-size:10px;color:var(--muted);margin-bottom:5px}
 .done{width:35px;height:35px;border:1px solid #435044;background:#182019;color:white;border-radius:10px}
 .done.yes{background:var(--green);color:#10160e;border-color:var(--green)}
 .field{margin:12px 0}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}
@@ -56,16 +57,18 @@ nav button b{font-size:20px;font-weight:500}nav button.active{color:var(--green)
 .body-card canvas{width:100%;height:240px;display:block;touch-action:pan-y}
 .body-card strong{font-size:12px}
 .muscle-list{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.muscle{background:var(--panel2);padding:12px;border-radius:12px;border:1px solid var(--line);font-size:12px}
+.muscle{background:var(--panel2);padding:12px;border-radius:12px;border:1px solid var(--line);font-size:12px;color:white}
 .muscle b{display:block;margin-bottom:7px}
 .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.calendar div{text-align:center;padding:9px 1px;border-radius:9px;background:var(--panel2);font-size:11px}
+.calendar div{text-align:center;padding:9px 1px;border-radius:9px;background:var(--panel2);font-size:11px;min-height:34px}
 .calendar .today{background:var(--green);color:#10160e;font-weight:bold}
 .calendar .training{border:1px solid #547943}
 .calendar .chosen{outline:2px solid var(--green)}
-.timer{font-size:40px;font-weight:800;text-align:center;color:var(--green);margin:10px}
-.timer-box{background:#0b100c;border:1px solid #3d5737;border-radius:12px;padding:10px;margin-top:9px}
-.timer-box .timer{font-size:30px;margin:8px}
+.timer{font-size:32px;font-weight:800;text-align:center;color:var(--green);margin:10px}
+.timer-box{background:#0b100c;border:1px solid #3d5737;border-radius:12px;padding:10px;margin-top:10px}
+.timer-box .timer{font-size:27px;margin:8px}
+.timer-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.timer-actions select{flex:1;min-width:100px;background:#202820;color:white;border:1px solid #344037;border-radius:9px;padding:9px}
 .muted{color:var(--muted)}.hidden{display:none!important}
 hr{border:0;border-top:1px solid var(--line);margin:17px 0}
 .modal-bg{position:fixed;inset:0;background:#000b;z-index:40;display:none;align-items:flex-end;justify-content:center}
@@ -76,11 +79,12 @@ hr{border:0;border-top:1px solid var(--line);margin:17px 0}
 .notice{border:1px solid #526d3e;background:#172318;color:#d8f6c7;padding:12px;border-radius:12px;margin:10px 0;font-size:12px}
 .toast{position:fixed;top:15px;left:50%;transform:translate(-50%,-150%);z-index:60;background:var(--green);color:#10160e;padding:13px 18px;border-radius:12px;font-size:13px;font-weight:800;transition:.25s;max-width:90%;text-align:center}
 .toast.show{transform:translate(-50%,0)}
-@media(max-width:360px){.body-card canvas{height:190px}.set{grid-template-columns:28px 1fr 1fr 35px}.done{width:30px;height:32px}}
+@media(max-width:360px){.body-card canvas{height:190px}.set{grid-template-columns:24px 1fr 1fr 34px}.done{width:32px;height:32px}.timer-actions .btn{padding:8px}}
 @media(min-width:650px){.modal-bg{align-items:center}.modal{border-radius:20px}}
 </style>
 </head>
 <body>
+
 <header>
  <div class="logo">FIT<span>TRACKER</span></div>
  <div class="header-rank" id="topRank">RANK 01</div>
@@ -91,30 +95,36 @@ hr{border:0;border-top:1px solid var(--line);margin:17px 0}
  <div class="eyebrow">IL TUO PERCORSO</div>
  <h1>Benvenuto.</h1>
  <p class="sub">Ogni allenamento conta. Continua a migliorare.</p>
+
  <div class="hero">
   <div class="eyebrow">LIVELLO GENERALE</div>
   <div class="rank" id="homeRank">RANK 01</div>
   <div class="sub" id="xpText">0 punti esperienza</div>
   <div class="progress"><i id="xpBar" style="width:0%"></i></div>
  </div>
+
  <div class="stats">
   <div class="stat"><strong id="workoutCount">0</strong><span>Allenamenti completati</span></div>
   <div class="stat"><strong id="setCount">0</strong><span>Serie completate</span></div>
   <div class="stat"><strong id="totalVolume">0</strong><span>Volume totale · kg</span></div>
   <div class="stat"><strong id="streak">0</strong><span>Giorni di attività</span></div>
  </div>
+
  <div class="card">
   <div class="row"><h2>Prossimo allenamento</h2><span class="tag" id="nextTag">PROGRAMMA</span></div>
   <h3 id="nextWorkout">Caricamento...</h3>
   <p class="sub" id="nextDescription"></p>
   <button class="btn" onclick="openWorkout()">Inizia allenamento</button>
  </div>
+
  <div class="card">
   <div class="row"><h2>Progressi muscolari</h2><button class="btn small secondary" onclick="showPage('body')">Visualizza</button></div>
   <div id="homeMuscles" class="muscle-list"></div>
  </div>
+
  <div class="card">
-  <h2>Musica</h2><p class="sub">Apri Demus per ascoltare la tua musica durante l'allenamento.</p>
+  <h2>Musica</h2>
+  <p class="sub">Apri Demus per ascoltare la tua musica durante l'allenamento.</p>
   <button class="btn secondary" onclick="window.open('https://apps.apple.com/it/app/demus-streaming-musicale/id6474685600','_blank')">Apri Demus</button>
  </div>
 </section>
@@ -123,6 +133,7 @@ hr{border:0;border-top:1px solid var(--line);margin:17px 0}
  <div class="eyebrow">SESSIONE GUIDATA</div>
  <h1 id="workoutTitle">Allenamento</h1>
  <p class="sub" id="workoutSubtitle">Preparati alla sessione.</p>
+
  <div class="card">
   <div class="row"><h2>01 · Riscaldamento</h2><span class="tag">5–10 MIN</span></div>
   <p class="sub">Inizia con attività leggera e mobilità articolare. Adatta il riscaldamento alla sessione.</p>
@@ -130,8 +141,10 @@ hr{border:0;border-top:1px solid var(--line);margin:17px 0}
   <div class="field"><label>Durata (minuti)</label><input id="warmMinutes" type="number" value="8" min="1"></div>
   <button class="btn secondary" id="warmButton" onclick="completeWarmup()">Completa riscaldamento</button>
  </div>
+
  <div class="row"><h2>02 · Esercizi</h2><button class="btn small secondary" onclick="addExercise()">+ Aggiungi</button></div>
  <div id="exerciseList"></div>
+
  <div class="card">
   <h2>03 · Fine sessione</h2>
   <p class="sub">Completa l'allenamento quando hai terminato.</p>
@@ -153,7 +166,8 @@ hr{border:0;border-top:1px solid var(--line);margin:17px 0}
   <p class="sub" id="muscleInfo">Tocca una zona del modello anatomico.</p>
   <div class="progress"><i id="muscleBar" style="width:0%"></i></div>
  </div>
- <h2>Gruppi muscolari</h2><div id="muscleList" class="muscle-list"></div>
+ <h2>Gruppi muscolari</h2>
+ <div id="muscleList" class="muscle-list"></div>
 </section>
 
 <section class="page" id="calendar">
@@ -177,6 +191,7 @@ hr{border:0;border-top:1px solid var(--line);margin:17px 0}
   <p class="sub" id="selectedDateWorkout"></p>
   <button class="btn" onclick="editSelectedDate()">Modifica scheda di questo giorno</button>
   <button class="btn secondary" onclick="openRecover()">Recupera una scheda precedente</button>
+  <button class="btn secondary" onclick="openWorkout(selectedDate,'Riposo')">Imposta riposo</button>
  </div>
  <div class="card">
   <h2>Programma</h2>
@@ -245,33 +260,53 @@ hr{border:0;border-top:1px solid var(--line);margin:17px 0}
 
 <script>
 const KEY="fittracker_2_professional";
-const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const todayISO=()=>{
+ const d=new Date();
+ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+
 const initial={
  profile:{gender:"",height:"",weight:""},
  startDate:"2026-11-18",
  sessions:[{
-  date:"2026-11-18",name:"Petto + spalle + tricipiti",notes:"Allenamento iniziale registrato",
+  date:"2026-11-18",
+  name:"Petto + spalle + tricipiti",
+  notes:"Allenamento iniziale registrato",
+  cardio:15,
   exercises:[
-   {name:"Chest Press",muscle:"Petto",sets:[{kg:30,reps:12,done:true},{kg:30,reps:12,done:true},{kg:30,reps:12,done:true}]},
-   {name:"Panca inclinata manubri",muscle:"Petto",sets:[{kg:6,reps:10,done:true},{kg:6,reps:10,done:true},{kg:6,reps:10,done:true}]},
-   {name:"Shoulder Press",muscle:"Spalle",sets:[{kg:15,reps:12,done:true},{kg:15,reps:12,done:true},{kg:15,reps:12,done:true}]},
-   {name:"Alzate laterali",muscle:"Spalle",sets:[{kg:6,reps:15,done:true},{kg:6,reps:15,done:true},{kg:6,reps:15,done:true}]},
-   {name:"Push Down ai cavi",muscle:"Tricipiti",sets:[{kg:30,reps:12,done:true},{kg:30,reps:12,done:true},{kg:30,reps:12,done:true}]}
+   {name:"Chest Press",muscle:"Petto",rest:90,sets:[{kg:30,reps:12,done:true},{kg:30,reps:12,done:true},{kg:30,reps:12,done:true}]},
+   {name:"Panca inclinata manubri",muscle:"Petto",rest:90,sets:[{kg:6,reps:10,done:true},{kg:6,reps:10,done:true},{kg:6,reps:10,done:true}]},
+   {name:"Shoulder Press",muscle:"Spalle",rest:75,sets:[{kg:15,reps:12,done:true},{kg:15,reps:12,done:true},{kg:15,reps:12,done:true}]},
+   {name:"Alzate laterali",muscle:"Spalle",rest:60,sets:[{kg:6,reps:15,done:true},{kg:6,reps:15,done:true},{kg:6,reps:15,done:true}]},
+   {name:"Push Down ai cavi",muscle:"Tricipiti",rest:60,sets:[{kg:30,reps:12,done:true},{kg:30,reps:12,done:true},{kg:30,reps:12,done:true}]}
   ]
  }],
  xp:150,
  exercises:{
   "Petto + Tricipiti":[
-   ["Chest Press","Petto",3,12,90],["Pectoral Machine","Petto",3,12,75],["Shoulder Press","Spalle",2,12,75],["Push Down ai cavi","Tricipiti",3,12,60]
+   ["Chest Press","Petto",3,12,90],
+   ["Pectoral Machine","Petto",3,12,75],
+   ["Shoulder Press","Spalle",2,12,75],
+   ["Push Down ai cavi","Tricipiti",3,12,60]
   ],
   "Schiena + Bicipiti":[
-   ["Lat Machine","Schiena",3,12,90],["Rematore macchina","Schiena",3,12,90],["Pulley basso","Schiena",2,12,75],["Curl manubri","Bicipiti",3,12,60]
+   ["Lat Machine","Schiena",3,12,90],
+   ["Rematore macchina","Schiena",3,12,90],
+   ["Pulley basso","Schiena",2,12,75],
+   ["Curl manubri","Bicipiti",3,12,60]
   ],
   "Gambe + Addome":[
-   ["Leg Press","Gambe",3,12,90],["Leg Extension","Gambe",3,12,75],["Leg Curl","Gambe",3,12,75],["Calf Machine","Gambe",3,15,60],["Crunch Machine","Addome",3,12,60]
+   ["Leg Press","Gambe",3,12,90],
+   ["Leg Extension","Gambe",3,12,75],
+   ["Leg Curl","Gambe",3,12,75],
+   ["Calf Machine","Gambe",3,15,60],
+   ["Crunch Machine","Addome",3,12,60]
   ],
   "Spalle + Richiamo leggero":[
-   ["Alzate laterali","Spalle",3,12,60],["Reverse Pec Deck","Spalle",2,12,60],["Push Down leggero","Tricipiti",2,12,60],["Curl leggero","Bicipiti",2,12,60]
+   ["Alzate laterali","Spalle",3,12,60],
+   ["Reverse Pec Deck","Spalle",2,12,60],
+   ["Push Down leggero","Tricipiti",2,12,60],
+   ["Curl leggero","Bicipiti",2,12,60]
   ]
  },
  mode:"original",
@@ -279,41 +314,96 @@ const initial={
  datePlans:{},
  editedDays:{}
 };
+
+function clone(obj){return JSON.parse(JSON.stringify(obj))}
 let data;
 try{
- data=JSON.parse(localStorage.getItem(KEY))||JSON.parse(JSON.stringify(initial));
- data.profile=data.profile||initial.profile;
- data.sessions=data.sessions||[];
- data.exercises=data.exercises||JSON.parse(JSON.stringify(initial.exercises));
+ const saved=localStorage.getItem(KEY);
+ data=saved?JSON.parse(saved):clone(initial);
+ data.profile=data.profile||clone(initial.profile);
+ data.sessions=Array.isArray(data.sessions)?data.sessions:[];
+ data.exercises=data.exercises||clone(initial.exercises);
  data.activeDays=data.activeDays||[1,2,4,5];
  data.datePlans=data.datePlans||{};
  data.editedDays=data.editedDays||{};
  data.mode=data.mode||"original";
- data.xp=data.xp||0;
-}catch(e){data=JSON.parse(JSON.stringify(initial))}
-function persist(){localStorage.setItem(KEY,JSON.stringify(data))}
-const plan={1:"Petto + Tricipiti",2:"Schiena + Bicipiti",4:"Gambe + Addome",5:"Spalle + Richiamo leggero"};
+ data.xp=Number(data.xp)||0;
+
+ // Ripara vecchie schede che non conservavano nome, muscolo o recupero.
+ data.sessions.forEach(s=>{
+  (s.exercises||[]).forEach(e=>{
+   e.name=e.name||"Esercizio";
+   e.muscle=e.muscle||"Petto";
+   e.rest=e.rest||90;
+   e.sets=e.sets||[];
+  });
+ });
+}catch(e){data=clone(initial)}
+
+if(!localStorage.getItem(KEY)){
+ data=clone(initial);
+}
+function persist(){
+ localStorage.setItem(KEY,JSON.stringify(data));
+}
+const plan={
+ 1:"Petto + Tricipiti",
+ 2:"Schiena + Bicipiti",
+ 4:"Gambe + Addome",
+ 5:"Spalle + Richiamo leggero"
+};
 const dayNames=["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
 const muscleNames=["Petto","Schiena","Spalle","Bicipiti","Tricipiti","Gambe","Addome"];
-let activeWorkout="",selected="Petto",monthView=new Date(),selectedDate=todayISO();
-let activeSets={},timerIntervals={},timerValues={},timerDurations={};
-let editingDate=false,editingSessionIndex=null,workoutDate=todayISO(),warmupDone=false;
+
+let activeWorkout="";
+let selected="Petto";
+let monthView=new Date();
+let selectedDate=todayISO();
+let activeSets=[];
+let timerIntervals={};
+let timerValues={};
+let timerDurations={};
+let editingSessionIndex=null;
+let workoutDate=todayISO();
+let warmupDone=false;
 let anatomyInstances=[];
+let bodyAnimationFrames=[];
 
 function el(id){return document.getElementById(id)}
-function toast(message){const t=el("toast");t.textContent=message;t.classList.add("show");clearTimeout(t._timeout);t._timeout=setTimeout(()=>t.classList.remove("show"),2600)}
-function escapeHTML(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function escapeHTML(s){
+ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
 function escapeAttr(s){return escapeHTML(s)}
-function parseISO(s){const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
+function parseISO(s){
+ const [y,m,d]=s.split("-").map(Number);
+ return new Date(y,m-1,d);
+}
+function formatISO(d){
+ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function toast(message){
+ const t=el("toast");
+ t.textContent=message;
+ t.classList.add("show");
+ clearTimeout(t._timeout);
+ t._timeout=setTimeout(()=>t.classList.remove("show"),2600);
+}
 function rankFor(xp){return Math.max(1,Math.floor(xp/100)+1)}
+function recalculateXP(){
+ data.xp=data.sessions.reduce((total,s)=>
+  total+(s.exercises||[]).reduce((a,e)=>
+   a+(e.sets||[]).filter(x=>x.done).length*10,0),0);
+}
 function muscleXP(name){
  let xp=0;
- data.sessions.forEach(s=>(s.exercises||[]).forEach(e=>{if(e.muscle===name)xp+=(e.sets||[]).filter(x=>x.done).length*10}));
+ data.sessions.forEach(s=>(s.exercises||[]).forEach(e=>{
+  if(e.muscle===name)xp+=(e.sets||[]).filter(x=>x.done).length*10;
+ }));
  return xp;
 }
 function muscleRank(name){return rankFor(muscleXP(name))}
 function getDayPlan(date){
- if(data.datePlans[date])return data.datePlans[date];
+ if(Object.prototype.hasOwnProperty.call(data.datePlans,date))return data.datePlans[date];
  const day=parseISO(date).getDay();
  if(data.mode==="custom"&&!data.activeDays.includes(day))return "Riposo";
  return plan[day]||"Riposo";
@@ -321,10 +411,13 @@ function getDayPlan(date){
 function getNextWorkout(){
  const d=new Date();
  for(let i=0;i<8;i++){
-  const date=new Date(d);date.setDate(d.getDate()+i);
-  const iso=`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+  const date=new Date(d);
+  date.setDate(d.getDate()+i);
+  const iso=formatISO(date);
   const name=getDayPlan(iso);
-  if(name!=="Riposo")return {name,date:date.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"}),iso};
+  if(name!=="Riposo"){
+   return {name,date:date.toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"}),iso};
+  }
  }
  return {name:"Riposo",date:"",iso:todayISO()};
 }
@@ -340,338 +433,643 @@ function showPage(id){
  window.scrollTo(0,0);
 }
 function renderHome(){
+ recalculateXP();
  const rank=rankFor(data.xp);
  el("topRank").textContent="RANK "+String(rank).padStart(2,"0");
  el("homeRank").textContent="RANK "+String(rank).padStart(2,"0");
  el("xpText").textContent=data.xp+" punti esperienza · "+(100-data.xp%100)+" al prossimo livello";
  el("xpBar").style.width=(data.xp%100)+"%";
+
  const allSets=data.sessions.flatMap(s=>(s.exercises||[]).flatMap(e=>(e.sets||[]).filter(x=>x.done)));
  const volume=allSets.reduce((a,s)=>a+(+s.kg||0)*(+s.reps||0),0);
  el("workoutCount").textContent=data.sessions.length;
  el("setCount").textContent=allSets.length;
  el("totalVolume").textContent=Math.round(volume);
  el("streak").textContent=new Set(data.sessions.map(s=>s.date)).size;
+
  const upcoming=getNextWorkout();
  el("nextWorkout").textContent=upcoming.name;
  el("nextDescription").textContent=upcoming.date+" · "+(upcoming.name==="Riposo"?"Recupero e riposo":"Sessione programmata");
  el("nextTag").textContent=upcoming.name==="Riposo"?"RECUPERO":"PROGRAMMA";
- el("homeMuscles").innerHTML=muscleNames.map(m=>`<div class="muscle"><b>${m}</b><span class="muted">RANK ${String(muscleRank(m)).padStart(2,"0")}</span><div class="progress"><i style="width:${muscleXP(m)%100}%"></i></div></div>`).join("");
+
+ el("homeMuscles").innerHTML=muscleNames.map(m=>
+  `<div class="muscle"><b>${m}</b><span class="muted">RANK ${String(muscleRank(m)).padStart(2,"0")}</span><div class="progress"><i style="width:${muscleXP(m)%100}%"></i></div></div>`
+ ).join("");
+ persist();
 }
 function getTemplate(name){
  const list=data.exercises[name]||[];
- return list.map(e=>({name:e[0],muscle:e[1],sets:Array.from({length:e[2]},()=>({kg:"",reps:e[3],done:false})),rest:e[4]}));
+ return list.map(e=>({
+  name:e[0],muscle:e[1],rest:e[4]||90,
+  sets:Array.from({length:e[2]},()=>({kg:"",reps:e[3],done:false}))
+ }));
 }
 function sessionToTemplate(session){
- return (session.exercises||[]).map(e=>({name:e.name,muscle:e.muscle,sets:(e.sets||[]).map(s=>({kg:s.kg??"",reps:s.reps??12,done:false})),rest:e.rest||90}));
+ return (session.exercises||[]).map(e=>({
+  name:e.name,
+  muscle:e.muscle||"Petto",
+  rest:e.rest||90,
+  sets:(e.sets||[]).map(s=>({
+   kg:s.kg??"",
+   reps:s.reps??12,
+   done:false
+  }))
+ }));
+}
+function copyExercises(exercises){
+ return exercises.map(e=>({
+  name:e.name,
+  muscle:e.muscle,
+  rest:e.rest||90,
+  sets:e.sets.map(s=>({...s}))
+ }));
 }
 function getSavedDateWorkout(date){
- if(data.editedDays[date])return JSON.parse(JSON.stringify(data.editedDays[date]));
+ if(data.editedDays[date]){
+  return clone(data.editedDays[date]);
+ }
  const name=getDayPlan(date);
  return {name,exercises:getTemplate(name)};
 }
 function openWorkout(date=todayISO(),forcedName=null,fromSession=null){
- workoutDate=date;selectedDate=date;editingSessionIndex=null;editingDate=false;warmupDone=false;
+ workoutDate=date;
+ selectedDate=date;
+ editingSessionIndex=null;
+ warmupDone=false;
+
  let workout;
  if(fromSession!==null){
-  const s=data.sessions[fromSession];workout={name:s.name,exercises:sessionToTemplate(s)};
+  const s=data.sessions[fromSession];
+  if(!s)return;
+  workout={name:s.name,exercises:sessionToTemplate(s)};
   editingSessionIndex=fromSession;
  }else if(forcedName){
-  workout={name:forcedName,exercises:getTemplate(forcedName)};
+  workout={
+   name:forcedName,
+   exercises:forcedName==="Riposo"?[]:getTemplate(forcedName)
+  };
  }else{
   workout=getSavedDateWorkout(date);
  }
+
  activeWorkout=workout.name;
- activeSets=workout.exercises.map(e=>e.sets.map(s=>({...s,done:false})));
+ activeSets=copyExercises(workout.exercises||[]);
+
  el("workoutTitle").textContent=activeWorkout;
- el("workoutSubtitle").textContent=dayNames[parseISO(date).getDay()]+" · "+parseISO(date).toLocaleDateString("it-IT")+" · "+(date===todayISO()?"Oggi":date);
- el("sessionNotes").value="";
+ el("workoutSubtitle").textContent=
+  dayNames[parseISO(date).getDay()]+" · "+
+  parseISO(date).toLocaleDateString("it-IT")+" · "+
+  (date===todayISO()?"Oggi":date);
+
+ el("sessionNotes").value=editingSessionIndex!==null?data.sessions[editingSessionIndex].notes||"":"";
  el("warmButton").textContent="Completa riscaldamento";
- renderExercises();showPage("workout");
+ renderExercises();
+ showPage("workout");
 }
 function renderExercises(){
- const list=(data.editedDays[workoutDate]&&editingSessionIndex===null)?data.editedDays[workoutDate].exercises:(data.exercises[activeWorkout]||[]);
- const normalized=activeSets;
- el("exerciseList").innerHTML=normalized.map((e,i)=>{
-  const sets=normalized[i]||[];
+ el("exerciseList").innerHTML=activeSets.map((e,i)=>{
+  const sets=e.sets||[];
   return `<div class="exercise">
-   <div class="exercise-head"><div><h3>${escapeHTML(e.name)}</h3><p class="sub">${escapeHTML(e.muscle)} · ${sets.length} serie</p></div><span class="tag">${e.rest||90} sec</span></div>
-   <div class="row" style="margin-top:13px"><span class="sub">SERIE</span><button class="btn small secondary" onclick="editExercise(${i})">Modifica</button></div>
-   ${sets.map((s,j)=>`<div class="set">
-    <span class="muted">${j+1}</span>
-    <div><label>Peso kg</label><input type="number" min="0" step="0.5" placeholder="0" value="${escapeAttr(s.kg)}" onchange="updateSet(${i},${j},'kg',this.value)"></div>
-    <div><label>Ripetizioni</label><input type="number" min="0" value="${escapeAttr(s.reps)}" onchange="updateSet(${i},${j},'reps',this.value)"></div>
-    <button class="done ${s.done?'yes':''}" onclick="toggleSet(${i},${j})">${s.done?'✓':'○'}</button>
-   </div>
-   <div class="timer-box">
-    <div class="row"><span class="sub">RECUPERO SERIE ${j+1}</span><span class="tag" id="timerText-${i}-${j}">Pronto</span></div>
-    <div class="timer" id="timerNumber-${i}-${j}">01:30</div>
-    <div class="row">
-     <select style="background:#202820;color:white;border:1px solid #344037;border-radius:9px;padding:8px;width:45%" id="timerChoice-${i}-${j}" onchange="setTimerDuration(${i},${j},this.value)">
-      <option value="60" ${(e.rest||90)===60?"selected":""}>60 secondi</option>
-      <option value="90" ${(e.rest||90)===90?"selected":""}>90 secondi</option>
-      <option value="120" ${(e.rest||90)===120?"selected":""}>120 secondi</option>
-     </select>
-     <button class="btn small" onclick="startSetTimer(${i},${j})">AVVIA</button>
-     <button class="btn small secondary" onclick="pauseSetTimer(${i},${j})">Pausa</button>
-     <button class="btn small secondary" onclick="resetSetTimer(${i},${j})">↺</button>
+   <div class="exercise-head">
+    <div>
+     <div class="exercise-name">${escapeHTML(e.name)}</div>
+     <p class="sub">${escapeHTML(e.muscle)} · ${sets.length} serie</p>
     </div>
-   </div>`).join("")}
-   <div class="row" style="margin-top:12px"><span class="sub">${sets.filter(s=>s.done).length}/${sets.length} completate</span><button class="btn small secondary" onclick="addSet(${i})">+ Serie</button></div>
+    <span class="tag">${e.rest||90} sec</span>
+   </div>
+
+   <div class="row" style="margin-top:13px">
+    <span class="sub">SERIE · KG · RIPETIZIONI</span>
+    <button class="btn small secondary" onclick="editExercise(${i})">Modifica</button>
+   </div>
+
+   ${sets.map((s,j)=>{
+    const key=i+"-"+j;
+    const sec=timerValues[key]??(e.rest||90);
+    return `<div>
+     <div class="set">
+      <span class="muted">${j+1}</span>
+      <div>
+       <label>Peso kg</label>
+       <input type="number" min="0" step="0.5" placeholder="0"
+        value="${escapeAttr(s.kg)}"
+        onchange="updateSet(${i},${j},'kg',this.value)">
+      </div>
+      <div>
+       <label>Ripetizioni</label>
+       <input type="number" min="0"
+        value="${escapeAttr(s.reps)}"
+        onchange="updateSet(${i},${j},'reps',this.value)">
+      </div>
+      <button class="done ${s.done?'yes':''}" onclick="toggleSet(${i},${j})">${s.done?'✓':'○'}</button>
+     </div>
+
+     <div class="timer-box">
+      <div class="row">
+       <span class="sub">RECUPERO · SERIE ${j+1}</span>
+       <span class="tag" id="timerText-${i}-${j}">Pronto</span>
+      </div>
+      <div class="timer" id="timerNumber-${i}-${j}">${formatTimer(sec)}</div>
+      <div class="timer-actions">
+       <select id="timerChoice-${i}-${j}" onchange="setTimerDuration(${i},${j},this.value)">
+        <option value="60" ${(e.rest||90)===60?"selected":""}>60 sec</option>
+        <option value="90" ${(e.rest||90)===90?"selected":""}>90 sec</option>
+        <option value="120" ${(e.rest||90)===120?"selected":""}>120 sec</option>
+       </select>
+       <button class="btn small" onclick="startSetTimer(${i},${j})">AVVIA</button>
+       <button class="btn small secondary" onclick="pauseSetTimer(${i},${j})">PAUSA</button>
+       <button class="btn small secondary" onclick="resetSetTimer(${i},${j})">↺</button>
+      </div>
+     </div>
+    </div>`;
+   }).join("")}
+
+   <div class="row" style="margin-top:12px">
+    <span class="sub">${sets.filter(s=>s.done).length}/${sets.length} completate</span>
+    <button class="btn small secondary" onclick="addSet(${i})">+ Serie</button>
+   </div>
   </div>`;
- }).join("")||'<p class="sub">Nessun esercizio. Aggiungine uno oppure recupera una scheda.</p>';
+ }).join("")||'<p class="sub">Giorno di riposo. Puoi recuperare una scheda dal calendario oppure aggiungere un esercizio.</p>';
 }
-function updateSet(i,j,k,v){activeSets[i][j][k]=v;saveCurrentDraft()}
+function formatTimer(seconds){
+ seconds=Math.max(0,Number(seconds)||0);
+ return String(Math.floor(seconds/60)).padStart(2,"0")+":"+String(seconds%60).padStart(2,"0");
+}
+function updateSet(i,j,k,v){
+ activeSets[i].sets[j][k]=v;
+ saveCurrentDraft();
+}
 function toggleSet(i,j){
- const s=activeSets[i][j];s.done=!s.done;
- if(s.done){toast("Serie completata! Ottimo lavoro 💪");startSetTimer(i,j)}
- else toast("Completamento annullato");
- renderExercises();saveCurrentDraft();
+ const s=activeSets[i].sets[j];
+ s.done=!s.done;
+ if(s.done){
+  toast("Serie completata! Ottimo lavoro 💪");
+  startSetTimer(i,j);
+ }else{
+  toast("Completamento annullato");
+ }
+ renderExercises();
+ saveCurrentDraft();
 }
-function addSet(i){activeSets[i].push({kg:"",reps:12,done:false});renderExercises();saveCurrentDraft();toast("Serie aggiunta")}
+function addSet(i){
+ activeSets[i].sets.push({kg:"",reps:12,done:false});
+ renderExercises();
+ saveCurrentDraft();
+ toast("Serie aggiunta");
+}
 function editExercise(i){
  const e=activeSets[i];
- const name=prompt("Nome esercizio",e.name);if(name===null)return;
- const muscle=prompt("Gruppo muscolare",e.muscle);if(muscle===null)return;
- const rest=prompt("Recupero predefinito in secondi (60, 90 o 120)",e.rest||90);if(rest===null)return;
- e.name=name;e.muscle=muscle;e.rest=[60,90,120].includes(+rest)?+rest:90;
- renderExercises();saveCurrentDraft();
+ const name=prompt("Nome esercizio",e.name);
+ if(name===null)return;
+ const muscle=prompt("Gruppo muscolare",e.muscle);
+ if(muscle===null)return;
+ const rest=prompt("Recupero predefinito in secondi (60, 90 o 120)",e.rest||90);
+ if(rest===null)return;
+ e.name=name.trim()||e.name;
+ e.muscle=muscle.trim()||e.muscle;
+ e.rest=[60,90,120].includes(+rest)?+rest:90;
+ renderExercises();
+ saveCurrentDraft();
+ toast("Esercizio aggiornato");
 }
 function addExercise(){
- const name=prompt("Nome del nuovo esercizio");if(!name)return;
- const muscle=prompt("Gruppo muscolare (Petto, Schiena, Spalle, Bicipiti, Tricipiti, Gambe, Addome)","Petto");if(!muscle)return;
- const sets=+(prompt("Numero di serie","3")||3),reps=+(prompt("Ripetizioni","12")||12),rest=+(prompt("Recupero in secondi","90")||90);
- activeSets.push({name,muscle,rest,sets:Array.from({length:sets},()=>({kg:"",reps,done:false}))});
- renderExercises();saveCurrentDraft();toast("Esercizio aggiunto");
+ const name=prompt("Nome del nuovo esercizio");
+ if(!name)return;
+ const muscle=prompt("Gruppo muscolare (Petto, Schiena, Spalle, Bicipiti, Tricipiti, Gambe, Addome)","Petto");
+ if(!muscle)return;
+ const sets=Math.max(1,Math.min(10,+(prompt("Numero di serie","3")||3)));
+ const reps=Math.max(1,Math.min(100,+(prompt("Ripetizioni","12")||12)));
+ const rest=+(prompt("Recupero in secondi","90")||90);
+ activeSets.push({
+  name:name.trim(),muscle:muscle.trim(),rest:[60,90,120].includes(rest)?rest:90,
+  sets:Array.from({length:sets},()=>({kg:"",reps,done:false}))
+ });
+ renderExercises();
+ saveCurrentDraft();
+ toast("Esercizio aggiunto");
 }
 function startSetTimer(i,j){
- const key=i+"-"+j;clearInterval(timerIntervals[key]);
+ const key=i+"-"+j;
+ clearInterval(timerIntervals[key]);
  const select=el("timerChoice-"+key);
- const duration=select?+select.value:90;
+ const duration=select?+select.value:activeSets[i].rest||90;
  timerDurations[key]=duration;
  if(timerValues[key]===undefined||timerValues[key]<=0)timerValues[key]=duration;
  updateTimerDisplay(i,j);
- el("timerText-"+key).textContent="In corso";
+ const label=el("timerText-"+key);
+ if(label)label.textContent="In corso";
  timerIntervals[key]=setInterval(()=>{
   timerValues[key]--;
   updateTimerDisplay(i,j);
-  if(timerValues[key]<=0){clearInterval(timerIntervals[key]);el("timerText-"+key).textContent="Terminato";toast("Recupero terminato! 💪");}
+  if(timerValues[key]<=0){
+   clearInterval(timerIntervals[key]);
+   if(el("timerText-"+key))el("timerText-"+key).textContent="Terminato";
+   toast("Recupero terminato! 💪");
+  }
  },1000);
 }
 function updateTimerDisplay(i,j){
- const key=i+"-"+j,seconds=Math.max(0,timerValues[key]??90);
- const node=el("timerNumber-"+key);if(node)node.textContent=String(Math.floor(seconds/60)).padStart(2,"0")+":"+String(seconds%60).padStart(2,"0");
+ const key=i+"-"+j;
+ const node=el("timerNumber-"+key);
+ if(node)node.textContent=formatTimer(timerValues[key]??90);
 }
 function pauseSetTimer(i,j){
- const key=i+"-"+j;clearInterval(timerIntervals[key]);if(el("timerText-"+key))el("timerText-"+key).textContent="In pausa";
+ const key=i+"-"+j;
+ clearInterval(timerIntervals[key]);
+ if(el("timerText-"+key))el("timerText-"+key).textContent="In pausa";
 }
 function resetSetTimer(i,j){
- const key=i+"-"+j;clearInterval(timerIntervals[key]);
- const select=el("timerChoice-"+key);timerValues[key]=select?+select.value:90;
- updateTimerDisplay(i,j);if(el("timerText-"+key))el("timerText-"+key).textContent="Pronto";
+ const key=i+"-"+j;
+ clearInterval(timerIntervals[key]);
+ const select=el("timerChoice-"+key);
+ timerValues[key]=select?+select.value:activeSets[i].rest||90;
+ updateTimerDisplay(i,j);
+ if(el("timerText-"+key))el("timerText-"+key).textContent="Pronto";
 }
 function setTimerDuration(i,j,v){
- const key=i+"-"+j;clearInterval(timerIntervals[key]);timerValues[key]=+v;updateTimerDisplay(i,j);
+ const key=i+"-"+j;
+ clearInterval(timerIntervals[key]);
+ timerValues[key]=+v;
+ updateTimerDisplay(i,j);
  if(el("timerText-"+key))el("timerText-"+key).textContent="Pronto";
 }
 function saveCurrentDraft(){
- if(!editingDate||editingSessionIndex!==null)return;
- data.editedDays[workoutDate]={name:activeWorkout,exercises:activeSets.map(e=>({...e,sets:e.sets.map(s=>({...s}))}))};
+ if(editingSessionIndex!==null)return;
+ data.editedDays[workoutDate]={
+  name:activeWorkout,
+  exercises:copyExercises(activeSets)
+ };
  persist();
 }
-function completeWarmup(){warmupDone=true;el("warmButton").textContent="Riscaldamento completato ✓";toast("Riscaldamento registrato")}
+function completeWarmup(){
+ warmupDone=true;
+ el("warmButton").textContent="Riscaldamento completato ✓";
+ toast("Riscaldamento registrato");
+}
 function finishWorkout(){
- const exercises=activeSets.map(e=>({name:e.name,muscle:e.muscle,rest:e.rest||90,sets:e.sets.map(s=>({...s}))}));
+ const exercises=copyExercises(activeSets);
  const completedSets=exercises.flatMap(e=>e.sets).filter(s=>s.done);
  if(!completedSets.length&&!confirm("Non hai contrassegnato nessuna serie. Vuoi comunque registrare la sessione?"))return;
- const session={date:workoutDate,name:activeWorkout,exercises,notes:el("sessionNotes").value,warmup:warmupDone};
+
+ const session={
+  date:workoutDate,
+  name:activeWorkout,
+  exercises,
+  notes:el("sessionNotes").value,
+  warmup:warmupDone,
+  warmupType:el("warmType").value,
+  warmMinutes:+el("warmMinutes").value||0
+ };
+
  if(editingSessionIndex!==null){
   data.sessions[editingSessionIndex]=session;
   toast("Allenamento dello storico aggiornato!");
  }else{
   data.sessions.push(session);
-  data.xp+=completedSets.length*10;
-  data.completedDates=data.completedDates||[];
-  if(!data.completedDates.includes(workoutDate))data.completedDates.push(workoutDate);
   toast("Allenamento registrato! Grande lavoro 💪");
  }
- persist();checkTrainingWarnings();renderHome();renderProgress();showPage("home");
+
+ data.datePlans[workoutDate]=activeWorkout;
+ data.editedDays[workoutDate]={name:activeWorkout,exercises:copyExercises(exercises)};
+ recalculateXP();
+ persist();
+ checkTrainingWarnings();
+ refreshAll();
+ showPage("home");
 }
 function checkTrainingWarnings(){
- const now=new Date(),weekStart=new Date(now);weekStart.setDate(now.getDate()-((now.getDay()+6)%7));weekStart.setHours(0,0,0,0);
+ const now=new Date();
+ const weekStart=new Date(now);
+ weekStart.setDate(now.getDate()-((now.getDay()+6)%7));
+ weekStart.setHours(0,0,0,0);
  const thisWeek=data.sessions.filter(s=>parseISO(s.date)>=weekStart);
  const sets=thisWeek.reduce((a,s)=>a+(s.exercises||[]).reduce((b,e)=>b+(e.sets||[]).filter(x=>x.done).length,0),0);
- if(thisWeek.length>=6||sets>=90)alert("Attenzione: questa settimana hai accumulato molti allenamenti o serie. Valuta un giorno di recupero e ascolta i segnali del tuo corpo.");
- else if(thisWeek.length>=5||sets>=70)toast("Hai già accumulato un buon volume questa settimana. Ricordati il recupero.");
+ if(thisWeek.length>=6||sets>=90){
+  toast("Volume settimanale elevato: valuta il recupero.");
+ }else if(thisWeek.length>=5||sets>=70){
+  toast("Hai accumulato molto lavoro: ricordati il recupero.");
+ }
 }
 function renderCalendar(){
  const y=monthView.getFullYear(),m=monthView.getMonth();
  el("monthTitle").textContent=monthView.toLocaleDateString("it-IT",{month:"long",year:"numeric"});
- const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
+ const first=new Date(y,m,1).getDay();
+ const days=new Date(y,m+1,0).getDate();
  const labels=["D","L","M","M","G","V","S"];
  let html=labels.map(x=>`<div class="muted">${x}</div>`).join("");
  for(let i=0;i<first;i++)html+="<div></div>";
  for(let d=1;d<=days;d++){
-  const date=new Date(y,m,d),iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-  const isToday=iso===todayISO(),training=getDayPlan(iso)!=="Riposo";
+  const iso=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+  const isToday=iso===todayISO();
+  const training=getDayPlan(iso)!=="Riposo";
   const done=data.sessions.some(s=>s.date===iso);
   html+=`<div class="${isToday?'today':''} ${training?'training':''} ${iso===selectedDate?'chosen':''}" onclick="selectCalendarDate('${iso}')">${d}${done?'<br><span style="color:var(--green)">●</span>':''}</div>`;
  }
  el("calendarGrid").innerHTML=html;
  el("startDate").value=data.startDate||"";
- el("weekdayChoices").innerHTML=dayNames.map((d,i)=>`<div class="day"><div><b>${d}</b><small>${plan[i]||"Giorno libero / recupero"}</small></div><input style="width:22px;height:22px;accent-color:#a2ff62" type="checkbox" id="weekday-${i}" ${data.activeDays.includes(i)?"checked":""}></div>`).join("");
+ el("weekdayChoices").innerHTML=dayNames.map((d,i)=>
+  `<div class="day"><div><b>${d}</b><small>${plan[i]||"Giorno libero / recupero"}</small></div><input style="width:22px;height:22px;accent-color:#a2ff62" type="checkbox" id="weekday-${i}" ${data.activeDays.includes(i)?"checked":""}></div>`
+ ).join("");
  updateSelectedDatePanel();
 }
-function selectCalendarDate(date){selectedDate=date;renderCalendar()}
-function updateSelectedDatePanel(){
- const name=getDayPlan(selectedDate),existing=data.sessions.find(s=>s.date===selectedDate);
- el("selectedDateTitle").textContent=parseISO(selectedDate).toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"});
- el("selectedDateWorkout").textContent=existing?"Allenamento già registrato: "+existing.name:"Scheda prevista: "+name;
+function selectCalendarDate(date){
+ selectedDate=date;
+ renderCalendar();
 }
-function changeMonth(n){monthView.setMonth(monthView.getMonth()+n);renderCalendar()}
+function updateSelectedDatePanel(){
+ const name=getDayPlan(selectedDate);
+ const existing=data.sessions.find(s=>s.date===selectedDate);
+ el("selectedDateTitle").textContent=parseISO(selectedDate).toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"});
+ el("selectedDateWorkout").textContent=existing?"Allenamento registrato: "+existing.name:"Scheda prevista: "+name;
+}
+function changeMonth(n){
+ monthView.setMonth(monthView.getMonth()+n);
+ renderCalendar();
+}
 function saveActiveDays(){
  data.activeDays=dayNames.map((_,i)=>i).filter(i=>el("weekday-"+i).checked);
- data.mode="custom";persist();renderCalendar();renderHome();toast("Giorni abituali aggiornati");
+ data.mode="custom";
+ persist();
+ renderCalendar();
+ renderHome();
+ toast("Giorni abituali aggiornati");
 }
-function setMode(mode){data.mode=mode;persist();renderCalendar();renderHome();toast(mode==="original"?"Programma originale attivato":"Programma personalizzato attivato")}
+function setMode(mode){
+ data.mode=mode;
+ persist();
+ renderCalendar();
+ renderHome();
+ toast(mode==="original"?"Programma originale attivato":"Programma personalizzato attivato");
+}
 function editSelectedDate(){
- const existing=data.sessions.find(s=>s.date===selectedDate);
  const template=getSavedDateWorkout(selectedDate);
- const name=prompt("Nome della scheda per "+selectedDate,existing?existing.name:template.name);
+ const name=prompt("Nome della scheda per "+selectedDate,template.name==="Riposo"?"Petto + Tricipiti":template.name);
  if(name===null)return;
- const exercises=existing?sessionToTemplate(existing):template.exercises;
- data.datePlans[selectedDate]=name;
- data.editedDays[selectedDate]={name,exercises};
- persist();openWorkout(selectedDate,name);toast("Scheda del giorno pronta da modificare");
+ const options=Object.keys(data.exercises);
+ const chosen=options.find(x=>x.toLowerCase()===name.trim().toLowerCase())||name.trim();
+ data.datePlans[selectedDate]=chosen;
+ data.editedDays[selectedDate]={
+  name:chosen,
+  exercises:data.exercises[chosen]?getTemplate(chosen):template.exercises
+ };
+ persist();
+ openWorkout(selectedDate,chosen);
+ toast("Scheda del giorno pronta");
 }
-function saveStartDate(){data.startDate=el("startDate").value||todayISO();persist();toast("Data di inizio aggiornata")}
+function saveStartDate(){
+ data.startDate=el("startDate").value||todayISO();
+ persist();
+ toast("Data di inizio aggiornata");
+}
 function openRecover(){
- const options=data.sessions.slice().reverse().map(s=>({label:s.date+" · "+s.name,session:s}));
+ const options=data.sessions.slice().reverse();
  const templateNames=Object.keys(data.exercises);
  openModal("Recupera una scheda",`
   <p class="sub">Scegli una scheda già svolta oppure una delle schede originali.</p>
   <h3>Allenamenti precedenti</h3>
-  ${options.length?options.map(o=>`<button class="btn secondary" style="text-align:left" onclick="recoverHistory('${o.session.date}',${data.sessions.indexOf(o.session)})">${escapeHTML(o.label)}</button>`).join(""):'<p class="sub">Non ci sono ancora allenamenti nello storico.</p>'}
+  ${options.length?options.map(s=>{
+   const index=data.sessions.indexOf(s);
+   return `<button class="btn secondary" style="text-align:left" onclick="recoverHistory(${index})">${escapeHTML(s.date+" · "+s.name)}</button>`;
+  }).join(""):'<p class="sub">Non ci sono ancora allenamenti nello storico.</p>'}
   <hr><h3>Schede del programma</h3>
   ${templateNames.map(n=>`<button class="btn secondary" style="text-align:left" onclick="recoverTemplate('${escapeAttr(n)}')">${escapeHTML(n)}</button>`).join("")}
  `);
 }
-function recoverHistory(date,index){
- closeModal();const s=data.sessions[index];
+function recoverHistory(index){
+ const s=data.sessions[index];
  if(!s)return;
  const exercises=sessionToTemplate(s);
  data.datePlans[selectedDate]=s.name;
  data.editedDays[selectedDate]={name:s.name,exercises};
- persist();openWorkout(selectedDate,s.name);toast("Scheda precedente recuperata");
+ persist();
+ closeModal();
+ openWorkout(selectedDate,s.name);
+ activeSets=copyExercises(exercises);
+ renderExercises();
+ toast("Scheda precedente recuperata");
 }
 function recoverTemplate(name){
- closeModal();data.datePlans[selectedDate]=name;
- data.editedDays[selectedDate]={name,exercises:getTemplate(name)};
- persist();openWorkout(selectedDate,name);toast("Scheda recuperata");
+ const exercises=getTemplate(name);
+ data.datePlans[selectedDate]=name;
+ data.editedDays[selectedDate]={name,exercises};
+ persist();
+ closeModal();
+ openWorkout(selectedDate,name);
+ toast("Scheda recuperata");
 }
-function openModal(title,content){el("modalTitle").textContent=title;el("modalContent").innerHTML=content;el("modalBg").classList.add("open")}
+function openModal(title,content){
+ el("modalTitle").textContent=title;
+ el("modalContent").innerHTML=content;
+ el("modalBg").classList.add("open");
+}
 function closeModal(){el("modalBg").classList.remove("open")}
 function renderProgress(){
  const all=data.sessions.flatMap(s=>(s.exercises||[]).flatMap(e=>(e.sets||[]).filter(x=>x.done)));
  const vol=all.reduce((a,s)=>a+(+s.kg||0)*(+s.reps||0),0);
- el("pSessions").textContent=data.sessions.length;el("pSets").textContent=all.length;el("pVolume").textContent=Math.round(vol)+" kg";
+ el("pSessions").textContent=data.sessions.length;
+ el("pSets").textContent=all.length;
+ el("pVolume").textContent=Math.round(vol)+" kg";
  el("pExercises").textContent=new Set(data.sessions.flatMap(s=>(s.exercises||[]).map(e=>e.name))).size;
- el("history").innerHTML=data.sessions.slice().reverse().map((s,reverseIndex)=>{
-  const index=data.sessions.length-1-reverseIndex,sets=(s.exercises||[]).reduce((a,e)=>a+(e.sets||[]).filter(x=>x.done).length,0);
+
+ el("history").innerHTML=data.sessions.slice().reverse().map(s=>{
+  const index=data.sessions.indexOf(s);
+  const sets=(s.exercises||[]).reduce((a,e)=>a+(e.sets||[]).filter(x=>x.done).length,0);
   return `<div class="day"><div><b>${escapeHTML(s.name)}</b><small>${s.date} · ${sets} serie</small></div><button class="btn small secondary" onclick="editHistory(${index})">Apri</button></div>`;
  }).join("")||'<p class="sub">Non hai ancora registrato allenamenti.</p>';
+
  const loads={};
- data.sessions.forEach(s=>(s.exercises||[]).forEach(e=>(e.sets||[]).filter(x=>x.done).forEach(x=>{if(!loads[e.name])loads[e.name]=[];loads[e.name].push({date:s.date,kg:x.kg,reps:x.reps})})));
- el("loadHistory").innerHTML=Object.entries(loads).map(([n,arr])=>`<div class="day"><div><b>${escapeHTML(n)}</b><small>${arr.slice(-3).map(x=>x.kg+" kg × "+x.reps).join(" · ")}</small></div></div>`).join("")||'<p class="sub">I tuoi carichi compariranno qui.</p>';
+ data.sessions.forEach(s=>(s.exercises||[]).forEach(e=>(e.sets||[]).filter(x=>x.done).forEach(x=>{
+  if(!loads[e.name])loads[e.name]=[];
+  loads[e.name].push({date:s.date,kg:x.kg,reps:x.reps});
+ })));
+ el("loadHistory").innerHTML=Object.entries(loads).map(([n,arr])=>
+  `<div class="day"><div><b>${escapeHTML(n)}</b><small>${arr.slice(-3).map(x=>(x.kg||0)+" kg × "+x.reps).join(" · ")}</small></div></div>`
+ ).join("")||'<p class="sub">I tuoi carichi compariranno qui.</p>';
 }
-function editHistory(index){openWorkout(data.sessions[index].date,null,index)}
+function editHistory(index){
+ openWorkout(data.sessions[index].date,null,index);
+}
 function saveProfile(){
- data.profile={gender:el("gender").value,height:el("height").value,weight:el("weight").value};
- persist();updateCalories();toast("Profilo aggiornato");
+ data.profile={
+  gender:el("gender").value,
+  height:el("height").value,
+  weight:el("weight").value
+ };
+ persist();
+ updateCalories();
+ toast("Profilo aggiornato");
 }
 function loadProfile(){
- el("gender").value=data.profile.gender||"";el("height").value=data.profile.height||"";el("weight").value=data.profile.weight||"";updateCalories();
+ el("gender").value=data.profile.gender||"";
+ el("height").value=data.profile.height||"";
+ el("weight").value=data.profile.weight||"";
+ updateCalories();
 }
 function updateCalories(){
  const p=data.profile,h=+p.height,w=+p.weight;
- if(h>0&&w>0){const bmr=10*w+6.25*h-5*25+(p.gender==="maschio"?5:p.gender==="femmina"?-161:0);el("calorieEstimate").textContent="Metabolismo basale stimato: circa "+Math.round(bmr)+" kcal al giorno. È una stima indicativa."}
- else el("calorieEstimate").textContent="Inserisci altezza e peso per visualizzare una stima indicativa.";
+ if(h>0&&w>0){
+  const bmr=10*w+6.25*h-5*25+(p.gender==="maschio"?5:p.gender==="femmina"?-161:0);
+  el("calorieEstimate").textContent="Metabolismo basale stimato: circa "+Math.round(bmr)+" kcal al giorno. È una stima indicativa.";
+ }else{
+  el("calorieEstimate").textContent="Inserisci altezza e peso per visualizzare una stima indicativa.";
+ }
 }
 function exportData(){
  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
- const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="fittracker-backup.json";a.click();URL.revokeObjectURL(a.href);
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="fittracker-backup.json";
+ a.click();
+ URL.revokeObjectURL(a.href);
 }
 el("importFile").addEventListener("change",async e=>{
- const f=e.target.files[0];if(!f)return;
- try{data=JSON.parse(await f.text());persist();location.reload()}catch(err){alert("File di backup non valido.")}
+ const f=e.target.files[0];
+ if(!f)return;
+ try{
+  const imported=JSON.parse(await f.text());
+  if(!imported.sessions||!imported.exercises)throw new Error("Backup non valido");
+  data=imported;
+  data.datePlans=data.datePlans||{};
+  data.editedDays=data.editedDays||{};
+  data.activeDays=data.activeDays||[1,2,4,5];
+  persist();
+  location.reload();
+ }catch(err){
+  toast("File di backup non valido");
+ }
 });
-function resetData(){if(confirm("Vuoi cancellare tutti gli allenamenti e i dati salvati?")){localStorage.removeItem(KEY);location.reload()}}
+function resetData(){
+ if(confirm("Vuoi cancellare tutti gli allenamenti e i dati salvati?")){
+  localStorage.removeItem(KEY);
+  location.reload();
+ }
+}
 
 /* MODELLO ANATOMICO 3D */
 function initAnatomy(){
- if(!window.THREE)return;
+ if(!window.THREE){
+  el("front3d").insertAdjacentHTML("afterend",'<p class="sub">Per visualizzare il modello 3D serve una connessione internet.</p>');
+  return;
+ }
  if(anatomyInstances.length)return;
- createBodyModel("front3d",false);createBodyModel("back3d",true);
+ createBodyModel("front3d",false);
+ createBodyModel("back3d",true);
  renderMuscleList();
 }
 function createBodyModel(canvasId,back){
- const canvas=el(canvasId),scene=new THREE.Scene();scene.background=new THREE.Color(0x121814);
- const camera=new THREE.PerspectiveCamera(35,1,.1,100);camera.position.set(0,0,8);
+ const canvas=el(canvasId);
+ if(!canvas)return;
+ const scene=new THREE.Scene();
+ scene.background=new THREE.Color(0x121814);
+ const camera=new THREE.PerspectiveCamera(35,1,.1,100);
+ camera.position.set(0,0,8);
  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
  scene.add(new THREE.AmbientLight(0xffffff,.8));
- const light=new THREE.DirectionalLight(0xffffff,1.1);light.position.set(3,5,7);scene.add(light);
- const material=(color)=>new THREE.MeshStandardMaterial({color,roughness:.7,metalness:.05});
- const skin=material(0x657b68),dark=material(0x253b2a);
+ const light=new THREE.DirectionalLight(0xffffff,1.1);
+ light.position.set(3,5,7);
+ scene.add(light);
  const muscles={};
- function part(name,x,y,z,sx,sy,sz,group){
-  const geo=new THREE.SphereGeometry(1,20,16),mat=material(0x39533b);
-  const mesh=new THREE.Mesh(geo,mat);mesh.position.set(x,y,z);mesh.scale.set(sx,sy,sz);mesh.userData.group=group||"Petto";scene.add(mesh);
-  if(!muscles[group])muscles[group]=[];muscles[group].push(mesh);return mesh;
+ function part(x,y,z,sx,sy,sz,group,color=0x39533b){
+  const geo=new THREE.SphereGeometry(1,20,16);
+  const mat=new THREE.MeshStandardMaterial({color,roughness:.7,metalness:.05});
+  const mesh=new THREE.Mesh(geo,mat);
+  mesh.position.set(x,y,z);
+  mesh.scale.set(sx,sy,sz);
+  mesh.userData.group=group;
+  scene.add(mesh);
+  if(!muscles[group])muscles[group]=[];
+  muscles[group].push(mesh);
+  return mesh;
  }
- part("torso",0,1.05,0,.8,1.05,.38,back?"Schiena":"Petto");
- part("pelvis",0,-.2,0,.55,.45,.34,"Addome");
- part("head",0,2.45,0,.34,.42,.32,"Spalle");
- part("neck",0,1.95,0,.19,.24,.2,"Spalle");
- part("left shoulder",-.88,1.55,0,.32,.38,.3,"Spalle");part("right shoulder",.88,1.55,0,.32,.38,.3,"Spalle");
- part("left arm", -1.02,.88,0,.22,.65,.22,"Bicipiti");part("right arm",1.02,.88,0,.22,.65,.22,"Bicipiti");
- part("left forearm",-.98,.08,0,.17,.5,.18,"Bicipiti");part("right forearm",.98,.08,0,.17,.5,.18,"Bicipiti");
- part("left leg",-.34,-1.05,0,.27,.85,.27,"Gambe");part("right leg",.34,-1.05,0,.27,.85,.27,"Gambe");
- part("left calf",-.34,-1.9,0,.2,.65,.2,"Gambe");part("right calf",.34,-1.9,0,.2,.65,.2,"Gambe");
+
+ // Sagoma anatomica stilizzata, non identificabile.
+ part(0,2.45,0,.34,.42,.32,"Spalle",0x657b68);
+ part(0,1.95,0,.19,.24,.2,"Spalle",0x657b68);
+ part(0,1.05,0,.8,1.05,.38,back?"Schiena":"Petto",0x536c58);
+ part(0,-.2,0,.55,.45,.34,"Addome",0x536c58);
+ part(-.88,1.55,0,.32,.38,.3,"Spalle");
+ part(.88,1.55,0,.32,.38,.3,"Spalle");
+ part(-1.02,.88,0,.22,.65,.22,"Bicipiti");
+ part(1.02,.88,0,.22,.65,.22,"Bicipiti");
+ part(-.98,.08,0,.17,.5,.18,"Bicipiti");
+ part(.98,.08,0,.17,.5,.18,"Bicipiti");
+ part(-.34,-1.05,0,.27,.85,.27,"Gambe");
+ part(.34,-1.05,0,.27,.85,.27,"Gambe");
+ part(-.34,-1.9,0,.2,.65,.2,"Gambe");
+ part(.34,-1.9,0,.2,.65,.2,"Gambe");
+
  if(!back){
-  part("chest left",-.35,1.35,.32,.4,.35,.12,"Petto");part("chest right",.35,1.35,.32,.4,.35,.12,"Petto");
-  part("abs",0,.55,.35,.35,.55,.1,"Addome");
+  part(-.35,1.35,.32,.4,.35,.12,"Petto",0x75916c);
+  part(.35,1.35,.32,.4,.35,.12,"Petto",0x75916c);
+  part(0,.55,.35,.35,.55,.1,"Addome",0x75916c);
  }else{
-  part("back left",-.35,1.25,.32,.36,.62,.13,"Schiena");part("back right",.35,1.25,.32,.36,.62,.13,"Schiena");
-  part("glutes",0,-.22,.3,.48,.28,.12,"Gambe");
+  part(-.35,1.25,.32,.36,.62,.13,"Schiena",0x75916c);
+  part(.35,1.25,.32,.36,.62,.13,"Schiena",0x75916c);
+  part(0,-.22,.3,.48,.28,.12,"Gambe",0x75916c);
  }
- const group= new THREE.Group();scene.add(group);
- // I modelli vengono centrati e mantenuti proporzionati.
- camera.position.set(0,0,8);
+
  function resize(){
-  const w=canvas.clientWidth||150,h=canvas.clientHeight||240;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+  const w=canvas.clientWidth||150,h=canvas.clientHeight||240;
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h;
+  camera.updateProjectionMatrix();
  }
- resize();window.addEventListener("resize",resize);
- const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+ resize();
+ const resizeObserver=window.ResizeObserver?new ResizeObserver(resize):null;
+ if(resizeObserver)resizeObserver.observe(canvas);
+ else window.addEventListener("resize",resize);
+
+ const raycaster=new THREE.Raycaster();
+ const pointer=new THREE.Vector2();
  canvas.addEventListener("click",ev=>{
-  const r=canvas.getBoundingClientRect();pointer.x=((ev.clientX-r.left)/r.width)*2-1;pointer.y=-((ev.clientY-r.top)/r.height)*2+1;
-  raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(scene.children,true)[0];
+  const r=canvas.getBoundingClientRect();
+  pointer.x=((ev.clientX-r.left)/r.width)*2-1;
+  pointer.y=-((ev.clientY-r.top)/r.height)*2+1;
+  raycaster.setFromCamera(pointer,camera);
+  const hit=raycaster.intersectObjects(scene.children,true)[0];
   if(hit&&hit.object.userData.group)selectMuscle(hit.object.userData.group);
  });
- function animate(){renderer.render(scene,camera);requestAnimationFrame(animate)}
- animate();anatomyInstances.push({scene,renderer,camera,muscles});
+
+ let frame;
+ function animate(){
+  frame=requestAnimationFrame(animate);
+  renderer.render(scene,camera);
+ }
+ animate();
+ anatomyInstances.push({scene,renderer,camera,muscles,frame,resizeObserver});
 }
 function selectMuscle(name){
- selected=name;const xp=muscleXP(name);
- el("selectedMuscle").textContent=name;el("muscleRank").textContent="RANK "+String(muscleRank(name)).padStart(2,"0");
+ selected=name;
+ const xp=muscleXP(name);
+ el("selectedMuscle").textContent=name;
+ el("muscleRank").textContent="RANK "+String(muscleRank(name)).padStart(2,"0");
  el("muscleInfo").textContent=xp+" punti esperienza · "+Math.floor(xp/100)+" livelli completati.";
- el("muscleBar").style.width=(xp%100)+"%";renderMuscleList();
+ el("muscleBar").style.width=(xp%100)+"%";
+ renderMuscleList();
 }
 function renderMuscleList(){
  if(!el("muscleList"))return;
- el("muscleList").innerHTML=muscleNames.map(m=>`<button class="muscle" style="text-align:left;color:white" onclick="selectMuscle('${m}')"><b>${m}</b><span class="muted">RANK ${String(muscleRank(m)).padStart(2,"0")}</span><div class="progress"><i style="width:${muscleXP(m)%100}%"></i></div></button>`).join("");
+ el("muscleList").innerHTML=muscleNames.map(m=>
+  `<button class="muscle" style="text-align:left" onclick="selectMuscle('${m}')"><b>${m}</b><span class="muted">RANK ${String(muscleRank(m)).padStart(2,"0")}</span><div class="progress"><i style="width:${muscleXP(m)%100}%"></i></div></button>`
+ ).join("");
 }
-function refreshAll(){renderHome();renderProgress();renderCalendar();renderMuscleList();persist()}
-renderHome();loadProfile();renderCalendar();renderProgress();
+function refreshAll(){
+ recalculateXP();
+ renderHome();
+ renderProgress();
+ renderCalendar();
+ renderMuscleList();
+ persist();
+}
+
+// Avvio app
+recalculateXP();
+renderHome();
+loadProfile();
+renderCalendar();
+renderProgress();
+persist();
 </script>
 </body>
 </html>
